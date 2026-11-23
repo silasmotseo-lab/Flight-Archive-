@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FLIGHT ARCHIVE — CASE FILE 001</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root {
+      --bg:#060806; --navy:#000428; --green:#00FF41; --gdim:#006B1A;
+      --amber:#FF6B00; --cream:#E8E4D9; --red:#C41E1E;
+      --sepia:#1A1408; --sepia-text:#C8B882; --sepia-border:#4A3E1A;
+      --magenta:#FF00FF; --cyan:#00FFFF;
+      --panel:#07090A; --border:#0F180F;
+    }
+    html { scroll-behavior:smooth; }
+    body {
+      background:var(--bg); color:var(--green);
+      font-family:'Share Tech Mono',monospace;
+      min-height:100vh; overflow-x:hidden;
+    }
+    /* Scanlines */
+    body::after {
+      content:''; position:fixed; inset:0; pointer-events:none; z-index:9000;
+      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.09) 2px,rgba(0,0,0,0.09) 4px);
+    }
+    @keyframes flicker { 0%,100%{opacity:1} 92%{opacity:1} 93%{opacity:0.91} 94%{opacity:1} 98%{opacity:0.95} 99%{opacity:1} }
+    body { animation:flicker 9s infinite; }
+
+    /* ── PS2 BOOT ── */
+    #ps2-boot {
+      position:fixed; inset:0; background:var(--navy); z-index:9500;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:32px; transition:opacity 0.8s ease;
+    }
+    #ps2-boot.hidden { opacity:0; pointer-events:none; }
+    .ps2-bars { display:flex; gap:3px; align-items:flex-end; height:180px; }
+    .ps2-bar {
+      width:3px; border-radius:2px 2px 0 0;
+      background:linear-gradient(to top,#1111cc,#8888ff);
+      box-shadow:0 0 5px #3333cc;
+      transform:scaleY(0); transform-origin:bottom;
+      animation:riseBar 0.06s ease forwards;
+    }
+    @keyframes riseBar { to { transform:scaleY(1); } }
+    .ps2-wordmark {
+      font-size:clamp(18px,4vw,28px); letter-spacing:0.5em;
+      color:#fff; opacity:0; text-shadow:0 0 30px #4444ff;
+      animation:wFade 0.5s ease 2.4s forwards;
+    }
+    @keyframes wFade { to { opacity:1; } }
+
+    /* ── TERM BOOT ── */
+    #term-boot {
+      position:fixed; inset:0; background:var(--bg); z-index:8000;
+      display:flex; flex-direction:column; justify-content:center;
+      padding:40px clamp(20px,5vw,80px);
+      opacity:0; transition:opacity 0.3s ease;
+    }
+    #term-boot.visible { opacity:1; }
+    #term-boot.hidden { opacity:0; pointer-events:none; }
+    #boot-text { font-size:clamp(11px,1.4vw,13px); line-height:2.1; }
+    .bl { display:block; }
+    .bd { color:var(--gdim); }
+    .ba { color:var(--amber); }
+    .br { color:var(--red); }
+    .bc { color:var(--cyan); }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ── BREACH ── */
+    #breach { position:fixed; inset:0; z-index:9800; pointer-events:none; opacity:0; transition:opacity 0.05s;
+      background:repeating-linear-gradient(0deg,rgba(196,30,30,0.12) 0,rgba(196,30,30,0.12) 1px,transparent 1px,transparent 3px); }
+    #breach.on { opacity:1; }
+    #unauth { position:fixed; top:0; left:0; right:0; z-index:9700;
+      background:var(--red); color:#fff; font-size:10px; letter-spacing:0.25em;
+      padding:7px 20px; text-align:center; transform:translateY(-100%); transition:transform 0.3s ease; }
+    #unauth.on { transform:translateY(0); }
+
+    /* ── MAIN ── */
+    #main { opacity:0; transition:opacity 0.8s ease; }
+    #main.visible { opacity:1; }
+
+    /* ── NAV ── */
+    nav {
+      position:sticky; top:0; z-index:800;
+      display:flex; justify-content:space-between; align-items:center;
+      padding:0 clamp(16px,3vw,40px);
+      border-bottom:1px solid var(--gdim);
+      background:rgba(6,8,6,0.97); backdrop-filter:blur(4px);
+      height:44px; flex-wrap:wrap; gap:8px;
+    }
+    .nav-id { font-size:10px; letter-spacing:0.2em; color:var(--gdim); }
+    .nav-links { display:flex; gap:clamp(12px,2vw,28px); align-items:center; }
+    .nav-link { font-size:10px; letter-spacing:0.2em; color:var(--gdim); cursor:pointer; transition:color 0.15s; text-decoration:none; }
+    .nav-link:hover { color:var(--green); }
+    .nav-link.red { color:var(--red); }
+    .nav-link.red:hover { color:#ff6666; }
+    .nav-user { font-size:9px; letter-spacing:0.15em; color:var(--amber); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height:100vh; display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      padding:60px 24px; text-align:center; position:relative;
+      background:radial-gradient(ellipse at 50% 40%, rgba(0,4,40,0.6) 0%, transparent 70%);
+    }
+    /* Subtle grid lines */
+    .hero::before {
+      content:''; position:absolute; inset:0; pointer-events:none;
+      background-image:
+        linear-gradient(rgba(0,255,65,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,65,0.03) 1px, transparent 1px);
+      background-size:40px 40px;
+    }
+
+    /* Winged logo SVG */
+    .hero-emblem { width:clamp(120px,20vw,200px); margin-bottom:24px; opacity:0.85; }
+
+    .hero-eyebrow { font-size:9px; letter-spacing:0.5em; color:var(--gdim); margin-bottom:16px; }
+
+    .hero-title {
+      font-family:'Courier Prime',monospace; font-weight:700;
+      font-size:clamp(36px,8vw,72px); color:var(--cream);
+      letter-spacing:0.08em; line-height:1; margin-bottom:8px;
+      text-shadow:0 0 40px rgba(0,255,65,0.12);
+    }
+
+    .hero-status-grid {
+      display:grid; grid-template-columns:repeat(2,1fr);
+      gap:1px; background:var(--gdim); border:1px solid var(--gdim);
+      margin:32px 0; max-width:440px; width:100%;
+    }
+    .hsg-cell { background:var(--bg); padding:14px 18px; text-align:left; }
+    .hsg-label { font-size:8px; letter-spacing:0.3em; color:var(--gdim); margin-bottom:5px; }
+    .hsg-val { font-size:13px; letter-spacing:0.1em; }
+    .hsg-val.red { color:var(--red); }
+    .hsg-val.amber { color:var(--amber); }
+    .hsg-val.live { color:var(--green); }
+    .hsg-val.cream { color:var(--cream); }
+
+    .hero-cta {
+      display:inline-block; border:1px solid var(--green); color:var(--green);
+      font-family:'Share Tech Mono',monospace; font-size:11px;
+      letter-spacing:0.3em; padding:12px 32px; cursor:pointer;
+      background:transparent; transition:background 0.2s, color 0.2s;
+      text-decoration:none; margin-top:8px;
+    }
+    .hero-cta:hover { background:var(--green); color:var(--bg); }
+
+    .hero-tagline {
+      margin-top:32px; font-size:11px; color:var(--gdim);
+      font-family:'Courier Prime',monospace; font-style:italic;
+      max-width:400px;
+    }
+
+    /* Scroll indicator */
+    .scroll-hint { position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
+      font-size:9px; letter-spacing:0.3em; color:var(--gdim); animation:sbounce 2s ease infinite; }
+    @keyframes sbounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(4px)} }
+
+    /* ── CONTENT GRID ── */
+    .content { max-width:1100px; margin:0 auto; padding:60px clamp(16px,4vw,48px); }
+
+    /* Section header */
+    .sh { font-size:8px; letter-spacing:0.5em; color:var(--gdim); padding-bottom:10px;
+      border-bottom:1px solid var(--border); margin-bottom:20px; }
+
+    /* Evidence grid */
+    .ev-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; margin-bottom:48px; }
+
+    /* Evidence card — sepia paper */
+    .ev-card {
+      border:1px solid var(--sepia-border); background:var(--sepia);
+      padding:20px; position:relative; cursor:pointer;
+      transition:border-color 0.2s;
+    }
+    .ev-card:hover { border-color:var(--sepia-text); }
+    .ev-card-eye { font-size:8px; letter-spacing:0.3em; color:var(--sepia-text); opacity:0.6; margin-bottom:8px; }
+    .ev-card-title { font-size:13px; color:var(--sepia-text); margin-bottom:6px; font-family:'Courier Prime',monospace; font-weight:700; }
+    .ev-card-meta { font-size:9px; color:var(--sepia-text); opacity:0.5; line-height:1.8; }
+    .ev-card-stamp {
+      position:absolute; top:14px; right:14px;
+      border:1px solid var(--red); color:var(--red);
+      font-size:8px; letter-spacing:0.15em; padding:2px 6px;
+      transform:rotate(3deg); opacity:0.8;
+    }
+    .ev-card-stamp.green { border-color:var(--green); color:var(--green); transform:rotate(-2deg); }
+
+    /* Pilot + git two-col */
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:48px; }
+
+    /* Pilot card */
+    .pilot-card { border:1px solid var(--gdim); background:var(--panel); padding:20px; }
+    .pilot-inner { display:grid; grid-template-columns:110px 1fr; gap:16px; }
+    .pilot-img { position:relative; border:1px solid var(--gdim); overflow:hidden; aspect-ratio:3/4; }
+    .pilot-img img { width:100%; height:100%; object-fit:cover; filter:grayscale(1) contrast(1.1) brightness(0.75); display:block; }
+    .pilot-img::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at center,transparent 30%,rgba(0,4,40,0.55) 100%); }
+    .pilot-stamp { position:absolute; bottom:0; left:0; right:0; z-index:2; background:rgba(196,30,30,0.85); padding:4px; font-size:8px; letter-spacing:0.2em; color:#fff; text-align:center; }
+    .pdl { font-size:8px; letter-spacing:0.25em; color:var(--gdim); margin-bottom:2px; margin-top:10px; }
+    .pdl:first-child { margin-top:0; }
+    .pdv { font-size:11px; color:var(--cream); }
+    .pdv.active { color:var(--green); }
+    .pdv.red { color:var(--red); }
+    .pdv.dim { color:var(--gdim); font-size:10px; line-height:1.5; }
+
+    /* Git log */
+    .git-card { border:1px solid var(--gdim); background:#020802; padding:16px 18px; font-size:10px; line-height:2; }
+    .gr { display:flex; gap:12px; }
+    .gh { color:var(--amber); flex-shrink:0; }
+    .gm { color:var(--green); }
+    .gm.dim { color:var(--gdim); }
+    .gm.lost { color:var(--red); }
+    .gm.hot { color:var(--amber); }
+
+    /* Flight logs */
+    .log { border-left:2px solid var(--gdim); padding:10px 0 10px 16px; margin-bottom:14px; }
+    .log.live { border-left-color:var(--green); }
+    .log-n { font-size:8px; letter-spacing:0.3em; color:var(--gdim); margin-bottom:7px; }
+    .log-f { display:flex; flex-wrap:wrap; gap:16px; }
+    .lfl { font-size:8px; letter-spacing:0.15em; color:var(--gdim); display:block; margin-bottom:1px; }
+    .lfv { font-size:11px; color:var(--cream); }
+    .lfv.red { color:var(--red); }
+    .lfv.amber { color:var(--amber); }
+    .lfv.live { color:var(--green); }
+    .lfv.dim { color:var(--gdim); }
+
+    /* Pulse */
+    .pulse { display:inline-block; width:5px; height:5px; background:var(--red); border-radius:50%; margin-right:5px; vertical-align:middle; animation:pulse 2s ease infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+    /* Newspaper clippings */
+    .clippings { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-bottom:48px; }
+    .clip {
+      background:#0E0E08; border:1px solid #2A2A10;
+      padding:14px; position:relative;
+      transform:rotate(var(--rot,0deg));
+      transition:transform 0.2s;
+    }
+    .clip:hover { transform:rotate(0deg) scale(1.02); z-index:2; }
+    .clip-pub { font-size:8px; letter-spacing:0.2em; color:#4A4A20; margin-bottom:6px; border-bottom:1px solid #2A2A10; padding-bottom:6px; }
+    .clip-head { font-size:11px; color:#C8B862; font-family:'Courier Prime',monospace; font-weight:700; line-height:1.4; margin-bottom:6px; }
+    .clip-body { font-size:9px; color:#6A6A40; line-height:1.6; }
+
+    /* Live telemetry sidebar strip */
+    .telem-strip {
+      border:1px solid var(--gdim); padding:16px; margin-bottom:48px;
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:16px;
+    }
+    .tbar { }
+    .tbar-head { display:flex; justify-content:space-between; font-size:9px; margin-bottom:4px; }
+    .tbar-label { color:var(--gdim); }
+    .tbar-val { color:var(--green); }
+    .tbar-track { background:#020802; height:3px; border:1px solid var(--border); }
+    .tbar-fill { height:100%; background:var(--green); transition:width 2.5s ease; }
+    .tbar-fill.amber { background:var(--amber); }
+    .tbar-fill.red { background:var(--red); }
+
+    /* Terminal */
+    .term-wrap { background:#020802; border:1px solid var(--gdim); padding:14px 16px; margin-bottom:48px; }
+    .term-hist { margin-bottom:8px; min-height:48px; max-height:200px; overflow-y:auto; }
+    .tl { line-height:1.9; font-size:10px; display:block; }
+    .tl.cmd { color:var(--green); }
+    .tl.res { color:var(--cream); opacity:0.8; font-family:'Courier Prime',monospace; }
+    .tl.err { color:var(--red); }
+    .tl.sys { color:var(--gdim); }
+    .tl.cyan { color:var(--cyan); }
+    .term-row { display:flex; align-items:center; gap:8px; }
+    .term-pr { color:var(--green); white-space:nowrap; font-size:10px; }
+    .term-in { flex:1; background:transparent; border:none; outline:none; color:var(--green); font-family:'Share Tech Mono',monospace; font-size:10px; caret-color:var(--green); }
+
+    /* Memory card */
+    .mc { border:1px solid var(--gdim); padding:20px; background:var(--panel); position:relative; overflow:hidden; margin-bottom:48px; }
+    .mc::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(0,4,40,0.3) 0%,transparent 60%); pointer-events:none; }
+    .mc-hd { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+    .mc-t { font-size:10px; letter-spacing:0.2em; color:var(--cream); }
+    .mc-s { font-size:9px; color:var(--gdim); }
+    .mc-slot { display:flex; align-items:center; gap:10px; padding:10px; border:1px solid var(--border); margin-bottom:10px; background:#020802; }
+    .mc-si { font-size:14px; }
+    .mc-sn { font-size:10px; color:var(--cream); margin-bottom:2px; }
+    .mc-sd { font-size:9px; color:var(--gdim); }
+    .mc-pr { font-size:10px; color:var(--cream); margin:12px 0 10px; letter-spacing:0.1em; text-align:center; }
+    .mc-btns { display:flex; gap:8px; justify-content:center; margin-bottom:12px; }
+    .mc-btn { padding:8px 20px; font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:0.2em; cursor:pointer; border:1px solid var(--green); color:var(--bg); background:var(--green); transition:all 0.15s; }
+    .mc-btn:hover { background:transparent; color:var(--green); }
+    .mc-btn.no { background:transparent; color:var(--gdim); border-color:var(--gdim); }
+    .mc-btn.no:hover { color:var(--red); border-color:var(--red); }
+    .mc-inp-row { display:none; flex-direction:column; gap:8px; }
+    .mc-inp-row.show { display:flex; }
+    .mc-inp { background:transparent; border:1px solid var(--gdim); color:var(--green); font-family:'Share Tech Mono',monospace; font-size:11px; padding:10px 14px; outline:none; letter-spacing:0.05em; width:100%; }
+    .mc-inp::placeholder { color:var(--gdim); }
+    .mc-inp:focus { border-color:var(--green); }
+    .mc-sub { background:var(--green); color:var(--bg); border:1px solid var(--green); font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:0.2em; padding:10px; cursor:pointer; font-weight:700; transition:all 0.15s; }
+    .mc-sub:hover { background:transparent; color:var(--green); }
+    .mc-ok { display:none; font-size:10px; color:var(--green); text-align:center; margin-top:10px; letter-spacing:0.1em; }
+
+    /* Secret */
+    #secret { display:none; border:1px solid var(--cyan); padding:20px; margin-bottom:32px; background:#000a0a; }
+    #secret.show { display:block; }
+    .sec-lbl { font-size:8px; letter-spacing:0.4em; color:var(--cyan); margin-bottom:12px; }
+    .sec-txt { font-size:11px; line-height:1.9; color:var(--cyan); opacity:0.85; font-family:'Courier Prime',monospace; }
+
+    /* Locked cases */
+    .locked-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; margin-bottom:48px; }
+    .lc { border:1px solid #0d1a0d; background:#020802; padding:12px; }
+    .lc-t { font-size:10px; color:#0d2a0d; margin-bottom:4px; }
+    .lc-s { font-size:9px; }
+    .lc-s.denied { color:#3a0000; }
+    .lc-s.corrupt { color:#1a1a00; }
+    .lc-t.flicker { animation:cf002 7s infinite; }
+    @keyframes cf002 { 0%,100%{color:#0d2a0d} 49%{color:#0d2a0d} 50%{color:var(--red)} 51%{color:#0d2a0d} }
+
+    /* Footer */
+    footer { border-top:1px solid var(--border); padding:16px clamp(16px,4vw,48px); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; font-size:8px; letter-spacing:0.2em; color:var(--gdim); }
+    footer .live { color:var(--red); }
+
+    /* Doc text */
+    .doc { font-size:11px; line-height:1.9; color:var(--cream); opacity:0.8; font-family:'Courier Prime',monospace; margin-bottom:20px; }
+    .rx { background:var(--cream); color:var(--cream); user-select:none; padding:0 2px; }
+
+    @media (max-width:640px) {
+      .two-col { grid-template-columns:1fr; }
+      .pilot-inner { grid-template-columns:90px 1fr; }
+      .hero-status-grid { grid-template-columns:1fr 1fr; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      body,.pulse,.scroll-hint { animation:none; }
+      .ps2-bar { animation:none; transform:scaleY(1); }
+    }
+
+    /* ── FLOATING ARTIFACTS ── */
+    .af{position:relative;height:min(78vh,640px);margin:8px 0 40px;overflow:hidden;border:1px solid var(--border);
+      background:radial-gradient(ellipse at 50% 40%,#0c140c 0%,#050705 70%)}
+    .af-hint{position:absolute;left:0;right:0;top:10px;text-align:center;font-size:10px;letter-spacing:3px;color:var(--gdim);z-index:3;pointer-events:none}
+    .af-item{position:absolute;transform:translate(-50%,-50%);cursor:pointer;background:none;border:0;padding:0;z-index:2;
+      -webkit-tap-highlight-color:transparent;will-change:transform}
+    .af-item img{display:block;width:100%;height:auto;filter:drop-shadow(0 18px 24px rgba(0,0,0,.8));transition:filter .3s,transform .3s;pointer-events:none;user-select:none}
+    .af-item:hover img,.af-item:focus-visible img{filter:drop-shadow(0 0 18px rgba(0,255,65,.55)) drop-shadow(0 18px 24px rgba(0,0,0,.8));transform:scale(1.06)}
+    .af-item:focus-visible{outline:1px dashed var(--green);outline-offset:6px}
+    .af-lbl{position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:6px;white-space:nowrap;font-size:10px;letter-spacing:2px;
+      color:var(--green);opacity:.55;transition:opacity .3s;text-shadow:0 0 6px #000}
+    .af-item:hover .af-lbl{opacity:1}
+    .af-drift{animation:afd var(--d,9s) ease-in-out infinite alternate;animation-delay:var(--dl,0s)}
+    @keyframes afd{from{transform:translate(0,-8px) rotate(-1.2deg)}to{transform:translate(0,10px) rotate(1.4deg)}}
+    @media (prefers-reduced-motion:reduce){.af-drift{animation:none}}
+    #afp{position:fixed;inset:0;z-index:9400;background:rgba(2,4,2,.94);display:none;overflow-y:auto;padding:24px 18px 60px}
+    #afp.on{display:block}
+    .afp-in{max-width:880px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:28px;align-items:center;min-height:80vh}
+    @media(max-width:700px){.afp-in{grid-template-columns:1fr;min-height:0}}
+    .afp-img{width:100%;max-height:60vh;object-fit:contain;animation:afd 8s ease-in-out infinite alternate}
+    .afp-case{color:var(--amber);font-size:11px;letter-spacing:3px;margin-bottom:8px}
+    .afp-t{color:var(--cream);font-family:'Courier Prime',monospace;font-size:24px;font-weight:700;margin-bottom:14px}
+    .afp-row{font-size:12px;letter-spacing:1px;color:var(--green);padding:5px 0;border-bottom:1px solid var(--border)}
+    .afp-row b{color:var(--gdim);font-weight:400;display:inline-block;min-width:130px}
+    .afp-note{margin-top:14px;font-family:'Courier Prime',monospace;color:var(--sepia-text);line-height:1.7;font-size:14px}
+    .afp-nav{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+    .afp-nav button{background:none;border:1px solid var(--gdim);color:var(--green);font-family:inherit;font-size:11px;letter-spacing:2px;padding:10px 14px;cursor:pointer}
+    .afp-nav button:hover{border-color:var(--green);background:rgba(0,255,65,.08)}
+  </style>
+
+<style>
+/* ── CINEMATIC 1: EMBLEM DRAW ── */
+.hero-emblem path, .hero-emblem circle, .hero-emblem text {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawPath 2s ease forwards;
+}
+.hero-emblem path:nth-child(1) { animation-delay: 0.2s; }
+.hero-emblem path:nth-child(2) { animation-delay: 0.5s; }
+.hero-emblem circle { animation-delay: 1.2s; }
+.hero-emblem text { animation-delay: 1.6s; stroke-dasharray: 200; stroke-dashoffset: 200; }
+.hero-emblem path:nth-child(4) { animation-delay: 0.8s; }
+.hero-emblem path:nth-child(5) { animation-delay: 0.9s; }
+.hero-emblem path:nth-child(6) { animation-delay: 1.0s; }
+.hero-emblem path:nth-child(7) { animation-delay: 1.1s; }
+@keyframes drawPath {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Hero elements stagger in */
+.hero-eyebrow { opacity:0; animation: heroFade 0.6s ease 1.8s forwards; }
+.hero-title { opacity:0; animation: heroSlam 0.5s cubic-bezier(0.16,1,0.3,1) 2.2s forwards; }
+.hero-status-grid { opacity:0; animation: heroFade 0.6s ease 2.8s forwards; }
+.hero-cta { opacity:0; animation: heroFade 0.6s ease 3.2s forwards; }
+.hero-tagline { opacity:0; animation: heroFade 0.6s ease 3.6s forwards; }
+.scroll-hint { opacity:0; animation: heroFade 0.6s ease 4s forwards; }
+
+@keyframes heroFade {
+  from { opacity:0; transform:translateY(8px); }
+  to { opacity:1; transform:translateY(0); }
+}
+@keyframes heroSlam {
+  from { opacity:0; transform:translateY(24px) scale(0.97); letter-spacing:0.3em; }
+  to { opacity:1; transform:translateY(0) scale(1); letter-spacing:0.08em; }
+}
+
+/* ── CINEMATIC 2: SCROLL REVEALS ── */
+.reveal-up {
+  opacity:0; transform:translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal-up.revealed {
+  opacity:1; transform:translateY(0);
+}
+.reveal-up:nth-child(2) { transition-delay:0.1s; }
+.reveal-up:nth-child(3) { transition-delay:0.2s; }
+.reveal-up:nth-child(4) { transition-delay:0.3s; }
+
+.clip { opacity:0; transform:translateY(30px) rotate(var(--rot,0deg)); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+.clip.revealed { opacity:1; transform:translateY(0) rotate(var(--rot,0deg)); }
+.clip:hover { transform:rotate(0deg) scale(1.02) !important; }
+.clip:nth-child(2) { transition-delay:0.12s; }
+.clip:nth-child(3) { transition-delay:0.24s; }
+.clip:nth-child(4) { transition-delay:0.36s; }
+
+.log { opacity:0; transform:translateX(-20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.log.revealed { opacity:1; transform:translateX(0); }
+.log:nth-child(2) { transition-delay:0.15s; }
+.log:nth-child(3) { transition-delay:0.3s; }
+
+/* ── CINEMATIC 3: FULL SCREEN BREACH ── */
+#cinema-breach {
+  position:fixed; inset:0; z-index:9900;
+  background:#000; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:16px;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.08s ease;
+}
+#cinema-breach.on { opacity:1; pointer-events:all; }
+#cb-line1 {
+  font-size:clamp(14px,3vw,22px); letter-spacing:0.4em;
+  color:#C41E1E; text-align:center;
+  opacity:0; animation:none;
+}
+#cb-line2 {
+  font-size:clamp(10px,1.5vw,13px); letter-spacing:0.3em;
+  color:#6B0000; text-align:center;
+  opacity:0; animation:none;
+}
+#cb-bar {
+  width:clamp(200px,40vw,400px); height:1px;
+  background:#6B0000; margin-top:8px;
+  transform:scaleX(0); transform-origin:left;
+  animation:none;
+}
+@keyframes cbFade { from{opacity:0} to{opacity:1} }
+@keyframes cbBar { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+</style>
+
+<style>
+.bb{border:1px solid var(--gdim);background:var(--panel);padding:20px;margin-bottom:48px}
+.bb-hd{font-size:8px;letter-spacing:.3em;color:var(--gdim);margin-bottom:10px}
+.bb-t{font-size:13px;color:var(--cream);font-family:'Courier Prime',monospace;font-weight:700;margin-bottom:14px}
+.bb-row{display:flex;align-items:center;gap:14px}
+.bb-btn{flex:none;width:44px;height:44px;border:1px solid var(--green);background:none;color:var(--green);cursor:pointer;font-family:inherit;font-size:14px}
+.bb-btn:hover:not(:disabled){background:var(--green);color:var(--bg)}
+.bb-btn:disabled{opacity:.3;cursor:not-allowed}
+.bb-wave{flex:1;height:48px;display:flex;align-items:center;gap:2px;cursor:pointer}
+.bb-wave i{flex:1;background:#0f2a14;min-width:1px;transition:background .15s}
+.bb-wave i.on{background:var(--green)}
+.bb.play .bb-wave i.on:nth-child(3n){animation:bbf .3s infinite alternate}
+@keyframes bbf{to{opacity:.35}}
+.bb-meta{display:flex;justify-content:space-between;gap:10px;font-size:9px;letter-spacing:.2em;color:var(--gdim);margin-top:10px}
+</style>
+</head>
+<body>
+
+<div id="breach"></div>
+
+<!-- CINEMATIC BREACH SCREEN -->
+<div id="cinema-breach">
+  <div id="cb-line1">⚠ UNAUTHORIZED ACCESS DETECTED</div>
+  <div id="cb-bar"></div>
+  <div id="cb-line2">FLIGHT INVESTIGATION BUREAU — LOGGING VISITOR — STAND BY</div>
+</div>
+
+<div id="unauth">⚠ UNAUTHORIZED ACCESS DETECTED — LOGGING VISITOR — FLIGHT INVESTIGATION BUREAU</div>
+
+<!-- PS2 BOOT -->
+<div id="ps2-boot">
+  <div class="ps2-bars" id="ps2bars"></div>
+  <div class="ps2-wordmark">FLIGHT ARCHIVE</div>
+</div>
+
+<!-- TERM BOOT -->
+<div id="term-boot">
+  <div id="boot-text"></div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- NAV -->
+  <nav>
+    <span class="nav-id">FA-001 &nbsp;·&nbsp; FLIGHT ARCHIVE</span>
+    <div class="nav-links">
+      <a class="nav-link" href="#archive">ARCHIVE</a>
+      <a class="nav-link" href="#case">CASE FILES</a>
+      <a class="nav-link" href="#logs">LOGS</a>
+      <a class="nav-link" href="#terminal">TERMINAL</a>
+      <a class="nav-link red" href="#access">REDACTED</a>
+    </div>
+    <span class="nav-user">USER: GUEST &nbsp;|&nbsp; CLEARANCE: 0</span>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="archive">
+
+    <!-- Winged Icarus SVG emblem -->
+    <svg class="hero-emblem" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Left wing -->
+      <path d="M95 60 Q70 40 30 50 Q50 55 60 65 Q40 58 10 70 Q35 68 55 72 Q30 72 15 85 Q40 78 60 78 Q45 82 35 92 Q55 84 72 80 Q80 72 95 65Z" fill="none" stroke="#00FF41" stroke-width="0.8" opacity="0.7"/>
+      <!-- Right wing -->
+      <path d="M105 60 Q130 40 170 50 Q150 55 140 65 Q160 58 190 70 Q165 68 145 72 Q170 72 185 85 Q160 78 140 78 Q155 82 165 92 Q145 84 128 80 Q120 72 105 65Z" fill="none" stroke="#00FF41" stroke-width="0.8" opacity="0.7"/>
+      <!-- Center circle -->
+      <circle cx="100" cy="62" r="14" fill="none" stroke="#00FF41" stroke-width="0.8" opacity="0.9"/>
+      <!-- I inside circle -->
+      <text x="100" y="67" text-anchor="middle" font-family="'Courier Prime',monospace" font-size="12" font-weight="700" fill="#00FF41" opacity="0.9">I</text>
+      <!-- Top feather details left -->
+      <path d="M95 58 Q80 35 50 28 Q70 38 78 52" stroke="#00FF41" stroke-width="0.5" opacity="0.4"/>
+      <path d="M94 55 Q72 28 38 18 Q62 32 75 48" stroke="#00FF41" stroke-width="0.5" opacity="0.3"/>
+      <!-- Top feather details right -->
+      <path d="M105 58 Q120 35 150 28 Q130 38 122 52" stroke="#00FF41" stroke-width="0.5" opacity="0.4"/>
+      <path d="M106 55 Q128 28 162 18 Q138 32 125 48" stroke="#00FF41" stroke-width="0.5" opacity="0.3"/>
+    </svg>
+
+    <div class="hero-eyebrow">// FLIGHT INVESTIGATION BUREAU &nbsp;·&nbsp; CASE FILE 001</div>
+    <div class="hero-title">FLIGHT ARCHIVE</div>
+
+    <div class="hero-status-grid">
+      <div class="hsg-cell">
+        <div class="hsg-label">FLIGHT STATUS</div>
+        <div class="hsg-val red">UNKNOWN</div>
+      </div>
+      <div class="hsg-cell">
+        <div class="hsg-label">CASE FILE</div>
+        <div class="hsg-val cream">001</div>
+      </div>
+      <div class="hsg-cell">
+        <div class="hsg-label">LAST CONTACT</div>
+        <div class="hsg-val cream">2019</div>
+      </div>
+      <div class="hsg-cell">
+        <div class="hsg-label">CASE REOPENED</div>
+        <div class="hsg-val amber">2026</div>
+      </div>
+    </div>
+
+    <a class="hero-cta" href="#case">ACCESS ARCHIVE</a>
+
+    <div class="hero-tagline">"dashboards lack the means to show my total speeds"</div>
+
+    <div class="scroll-hint">▼ &nbsp; SCROLL TO INVESTIGATE</div>
+  </section>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- LIVE TELEMETRY -->
+    <div class="sh">// LIVE TELEMETRY — SECOND FLIGHT — <span class="pulse"></span>ACTIVE</div>
+    <div class="telem-strip">
+      <div class="tbar">
+        <div class="tbar-head"><span class="tbar-label">ALTITUDE</span><span class="tbar-val" id="alt-v">74%</span></div>
+        <div class="tbar-track"><div class="tbar-fill amber" id="alt-b" style="width:74%"></div></div>
+      </div>
+      <div class="tbar">
+        <div class="tbar-head"><span class="tbar-label">HEAT LEVEL</span><span class="tbar-val" id="heat-v" style="color:var(--red)">63%</span></div>
+        <div class="tbar-track"><div class="tbar-fill red" id="heat-b" style="width:63%"></div></div>
+      </div>
+      <div class="tbar">
+        <div class="tbar-head"><span class="tbar-label">SIGNAL</span><span class="tbar-val" id="sig-v">41%</span></div>
+        <div class="tbar-track"><div class="tbar-fill" id="sig-b" style="width:41%"></div></div>
+      </div>
+      <div class="tbar">
+        <div class="tbar-head"><span class="tbar-label">STRUCT. INTEGRITY</span><span class="tbar-val" id="str-v" style="color:var(--amber)">83%</span></div>
+        <div class="tbar-track"><div class="tbar-fill amber" id="str-b" style="width:83%"></div></div>
+      </div>
+    </div>
+
+    <!-- EVIDENCE LOCKER -->
+    <div class="sh" id="case">// EVIDENCE LOCKER — CASE FILE 001 — ICARUS, THE 2ND FLIGHT</div>
+    <div class="ev-grid">
+      <div class="ev-card">
+        <div class="ev-card-stamp">RESTRICTED</div>
+        <div class="ev-card-eye">BLACK BOX RECOVERY #001</div>
+        <div class="ev-card-title">VOICE MEMO — 2019-04-12</div>
+        <div class="ev-card-meta">FORMAT: .WAV &nbsp;·&nbsp; DURATION: 1:42<br/>SIGNAL QUALITY: 31%<br/>CONTENT: PILOT TRANSMISSION</div>
+      </div>
+      <div class="ev-card">
+        <div class="ev-card-stamp">OPEN</div>
+        <div class="ev-card-eye">FLIGHT LOG #024</div>
+        <div class="ev-card-title">ALTITUDE LOG — 2021-11-03</div>
+        <div class="ev-card-meta">ALTITUDE: 622m &nbsp;·&nbsp; VELOCITY: 83m/s<br/>HEAT LEVELS: RISING<br/>PILOT: NON-COMPLIANT &nbsp;·&nbsp; STATUS: WARNING IGNORED</div>
+      </div>
+      <div class="ev-card" onclick="revealSecret()" style="cursor:pointer;">
+        <div class="ev-card-stamp green">RECOVERED</div>
+        <div class="ev-card-eye">EVIDENCE — PILOT NOTES</div>
+        <div class="ev-card-title">pilot_notes.txt — UNDATED</div>
+        <div class="ev-card-meta">CLASSIFICATION: UNKNOWN<br/>SOURCE: UNKNOWN<br/>⚠ CLICK TO ACCESS</div>
+      </div>
+      <div class="ev-card">
+        <div class="ev-card-stamp">REDACTED</div>
+        <div class="ev-card-eye">WING STRUCTURE — MODEL I</div>
+        <div class="ev-card-title">TECHNICAL BLUEPRINT</div>
+        <div class="ev-card-meta">TITANIUM FRAME &nbsp;·&nbsp; CERAMIC FEATHERS<br/>SOLAR RESISTANT COATING<br/>NOTES: ██████████████████</div>
+      </div>
+    </div>
+
+
+    <!-- FLOATING ARTIFACTS -->
+    <div class="sh">// RECOVERED ARTIFACTS — TAP TO OPEN EVIDENCE FILE</div>
+    <div class="af" id="af" aria-label="Recovered artifacts"><div class="af-hint">MOVE CURSOR / TILT · SELECT AN OBJECT</div></div>
+    <div id="afp" role="dialog" aria-modal="true" aria-label="Evidence file"><div class="afp-in">
+      <img class="afp-img" id="afp-img" alt=""/>
+      <div>
+        <div class="afp-case" id="afp-case"></div><div class="afp-t" id="afp-t"></div>
+        <div id="afp-rows"></div><div class="afp-note" id="afp-note"></div>
+        <div class="afp-nav"><button id="afp-prev">◄ PREV</button><button id="afp-next">NEXT ►</button><button id="afp-x">RETURN TO ARCHIVE</button></div>
+      </div></div></div>
+
+    <!-- BLACK BOX AUDIO -->
+    <div class="sh">// BLACK BOX — RECOVERED AUDIO FRAGMENT</div>
+    <div class="bb" id="bb">
+      <div class="bb-hd">BLACK BOX RECOVERY #002 · UNRELEASED · SIGNAL FRAGMENT</div>
+      <div class="bb-t">FRAGMENT 001 — SOURCE UNKNOWN</div>
+      <div class="bb-row"><button class="bb-btn" id="bb-play" aria-label="Play recovered audio">▶</button><div class="bb-wave" id="bb-wave"></div></div>
+      <div class="bb-meta"><span id="bb-st">SIGNAL: STANDBY</span><span id="bb-tm">00:00 / 00:00</span></div>
+      <audio id="bb-au" preload="metadata" src="blackbox-001.mp3"></audio>
+    </div>
+
+    <!-- SECRET DOC -->
+    <div id="secret">
+      <div class="sec-lbl">// RECOVERED — PILOT_NOTES.TXT — CLEARANCE: UNKNOWN</div>
+      <div class="sec-txt">
+        Entry undated.<br/><br/>
+        They said I fell. I didn't fall.<br/>
+        I landed exactly where I needed to.<br/><br/>
+        The sun didn't burn me. It showed me what I was made of.<br/>
+        Turns out — something that doesn't melt.<br/><br/>
+        Second flight isn't a comeback.<br/>
+        It's a continuation.<br/><br/>
+        — SI
+      </div>
+    </div>
+
+    <!-- PILOT + GIT -->
+    <div class="two-col" id="logs">
+      <div>
+        <div class="sh">// PILOT PROFILE — RECOVERED</div>
+        <div class="pilot-card">
+          <div class="pilot-inner">
+            <div class="pilot-img">
+              <img src="pilot.jpg" alt="SUBJECT: ICARUS"/>
+              <div class="pilot-stamp">SUBJECT: ICARUS</div>
+            </div>
+            <div>
+              <div class="pdl">DESIGNATION</div><div class="pdv">SI / ICARUS</div>
+              <div class="pdl">ORIGIN</div><div class="pdv">JOHANNESBURG, ZA</div>
+              <div class="pdl">FIRST FLIGHT</div><div class="pdv">2018 — 2022</div>
+              <div class="pdl">STATUS</div><div class="pdv active">2ND FLIGHT ACTIVE</div>
+              <div class="pdl">COMPLIANCE</div><div class="pdv red">NON-COMPLIANT</div>
+              <div class="pdl">NOTE</div><div class="pdv dim">Declared deceased 2019. Telemetry contradicts record.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="sh">// FLIGHT_ARCHIVE // GIT_LOG</div>
+        <div class="git-card">
+          <div class="gr"><span class="gh">a1b2c3d</span><span class="gm">wings holding</span></div>
+          <div class="gr"><span class="gh">d4e5f6g</span><span class="gm">altitude increasing</span></div>
+          <div class="gr"><span class="gh">h7i8j9k</span><span class="gm dim">warning ignored</span></div>
+          <div class="gr"><span class="gh">k0l1m2n</span><span class="gm dim">heat levels abnormal</span></div>
+          <div class="gr"><span class="gh">o3p4q5r</span><span class="gm lost">signal lost</span></div>
+          <div class="gr"><span class="gh">s6t7u8v</span><span class="gm lost">black box active</span></div>
+          <div class="gr"><span class="gh">w9x0y1z</span><span class="gm hot">// 2026 — second ascent</span></div>
+          <div class="gr"><span class="gh">z2a3b4c</span><span class="gm">pilot: non-compliant. rising.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLIGHT LOGS -->
+    <div class="sh">// RECOVERED FLIGHT LOGS</div>
+    <div style="margin-bottom:48px;">
+      <div class="log">
+        <div class="log-n">FLIGHT LOG #001 — FIRST FLIGHT — 2018 — ARCHIVED</div>
+        <div class="log-f">
+          <div><span class="lfl">YEAR</span><span class="lfv">2018</span></div>
+          <div><span class="lfl">ALTITUDE</span><span class="lfv">INITIAL ASCENT</span></div>
+          <div><span class="lfl">STATUS</span><span class="lfv dim">ARCHIVED</span></div>
+        </div>
+      </div>
+      <div class="log">
+        <div class="log-n">FLIGHT LOG #019 — FIRST FLIGHT — 2022 — LAST KNOWN</div>
+        <div class="log-f">
+          <div><span class="lfl">YEAR</span><span class="lfv">2022</span></div>
+          <div><span class="lfl">ALTITUDE</span><span class="lfv red">█████████</span></div>
+          <div><span class="lfl">SIGNAL</span><span class="lfv red">LOST</span></div>
+        </div>
+      </div>
+      <div class="log live">
+        <div class="log-n">FLIGHT LOG #020 — SECOND FLIGHT — 2026 — <span class="pulse"></span>LIVE</div>
+        <div class="log-f">
+          <div><span class="lfl">YEAR</span><span class="lfv live">2026</span></div>
+          <div><span class="lfl">ALTITUDE</span><span class="lfv amber">INCREASING</span></div>
+          <div><span class="lfl">HEAT</span><span class="lfv amber">RISING</span></div>
+          <div><span class="lfl">PILOT</span><span class="lfv red">NON-COMPLIANT</span></div>
+          <div><span class="lfl">STATUS</span><span class="lfv live">IN PROGRESS</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEWSPAPER CLIPPINGS -->
+    <div class="sh">// MEDIA ARCHIVE — RECOVERED PRESS</div>
+    <div class="clippings" style="margin-bottom:48px;">
+      <div class="clip" style="--rot:-1.5deg">
+        <div class="clip-pub">AEGEAN SECTOR DAILY &nbsp;·&nbsp; 2019-07-18</div>
+        <div class="clip-head">LOCAL MYTH OR TRUTH? THE ICARUS INCIDENT</div>
+        <div class="clip-body">Witnesses report an unidentified aerial event over the sector. Officials deny involvement. Bureau declines comment.</div>
+      </div>
+      <div class="clip" style="--rot:1deg">
+        <div class="clip-pub">WORLD WIRE &nbsp;·&nbsp; 2019-07-19</div>
+        <div class="clip-head">GOVERNMENT DENIES SECOND FLIGHT CLAIMS</div>
+        <div class="clip-body">A spokesperson confirmed the subject is deceased. New signals detected in the region remain unexplained.</div>
+      </div>
+      <div class="clip" style="--rot:-0.8deg">
+        <div class="clip-pub">TECH RECOVERY DIGEST &nbsp;·&nbsp; 2019-08-02</div>
+        <div class="clip-head">RECOVERED DEBRIS CONFIRMS ADVANCED TECHNOLOGY</div>
+        <div class="clip-body">Material recovered near the Aegean sector does not match any known aerospace manufacturer. Investigation ongoing.</div>
+      </div>
+      <div class="clip" style="--rot:2deg">
+        <div class="clip-pub">FLIGHT INVESTIGATION BUREAU &nbsp;·&nbsp; 2026</div>
+        <div class="clip-head">UNEXPLAINED SIGNAL DETECTED — CASE REOPENED</div>
+        <div class="clip-body">Bureau sources confirm new telemetry received. The signal matches patterns from the original First Flight recordings.</div>
+      </div>
+    </div>
+
+    <!-- LOCKED CASE FILES -->
+    <div class="sh">// ARCHIVE — ALL CASE FILES</div>
+    <div class="locked-row" style="margin-bottom:48px;">
+      <div class="ev-card" style="opacity:0.9;">
+        <div class="ev-card-stamp green">OPEN</div>
+        <div class="ev-card-eye">CASE FILE</div>
+        <div class="ev-card-title">001 — ICARUS<br/>THE 2ND FLIGHT</div>
+        <div class="ev-card-meta">STATUS: UNDER INVESTIGATION<br/>2026</div>
+      </div>
+      <div class="lc">
+        <div class="lc-t flicker">▶ CASE FILE 002</div>
+        <div class="lc-s denied">ACCESS DENIED</div>
+      </div>
+      <div class="lc">
+        <div class="lc-t">▶ CASE FILE 003</div>
+        <div class="lc-s corrupt">FILE CORRUPTED</div>
+      </div>
+      <div class="lc">
+        <div class="lc-t">▶ CASE FILE 004</div>
+        <div class="lc-s denied">REDACTED</div>
+      </div>
+    </div>
+
+    <!-- TERMINAL -->
+    <div class="sh" id="terminal">// ARCHIVE TERMINAL — TYPE help</div>
+    <div class="term-wrap" style="margin-bottom:48px;">
+      <div class="term-hist" id="th">
+        <span class="tl sys">FLIGHT_ARCHIVE TERMINAL v2.6.1 — TYPE 'help' FOR COMMANDS</span>
+      </div>
+      <div class="term-row">
+        <span class="term-pr">FA-001 &gt;&nbsp;</span>
+        <input class="term-in" id="ti" type="text" autocomplete="off" spellcheck="false" placeholder="enter command..."/>
+      </div>
+    </div>
+
+    <!-- MEMORY CARD -->
+    <div class="sh" id="access">// ARCHIVE ACCESS REQUEST</div>
+    <div class="mc">
+      <div class="mc-hd">
+        <div><div class="mc-t">MEMORY CARD (8MB) — SLOT 1</div><div class="mc-s">FLIGHT INVESTIGATION BUREAU — ARCHIVE ACCESS</div></div>
+      </div>
+      <div class="mc-slot">
+        <div class="mc-si">💾</div>
+        <div><div class="mc-sn">FLIGHT_ARCHIVE_DATA</div><div class="mc-sd">STATUS: EMPTY &nbsp;·&nbsp; 8192KB FREE</div></div>
+      </div>
+      <div class="mc-pr" id="mc-pr">SAVE FLIGHT ARCHIVE DATA TO MEMORY CARD?</div>
+      <div class="mc-btns" id="mc-btns">
+        <button class="mc-btn" onclick="mcYes()">► YES</button>
+        <button class="mc-btn no" onclick="mcNo()">NO</button>
+      </div>
+      <div class="mc-inp-row" id="mc-ir">
+        <input class="mc-inp" type="email" id="mc-em" placeholder="ENTER CONTACT ADDRESS" autocomplete="off"/>
+        <button class="mc-sub" onclick="mcSave()">SAVE DATA ▶</button>
+      </div>
+      <div class="mc-ok" id="mc-ok">💾 DATA SAVED. STANDBY FOR CLASSIFIED UPDATES.</div>
+    </div>
+
+  </div><!-- /content -->
+
+  <footer>
+    <span>FLIGHT INVESTIGATION BUREAU &nbsp;|&nbsp; ARCHIVE REF: FA-2026-001</span>
+    <span class="live"><span class="pulse"></span>INVESTIGATION ACTIVE</span>
+    <span>CASE FILE 001 &nbsp;·&nbsp; ICARUS, THE 2ND FLIGHT</span>
+  </footer>
+
+</div><!-- /main -->
+
+<script>
+// PS2 BOOT
+const pb = document.getElementById('ps2bars');
+for (let i=0;i<64;i++) {
+  const b=document.createElement('div'); b.className='ps2-bar';
+  b.style.height=(20+Math.random()*160)+'px';
+  b.style.animationDelay=(i*0.025)+'s';
+  b.style.opacity=0.3+Math.random()*0.7;
+  pb.appendChild(b);
+}
+const ps2=document.getElementById('ps2-boot');
+const tb=document.getElementById('term-boot');
+const main=document.getElementById('main');
+setTimeout(()=>{ ps2.classList.add('hidden'); tb.classList.add('visible'); startBoot(); },3000);
+
+// TERM BOOT
+const lines=[
+  {t:'FLIGHT_ARCHIVE SYSTEM v2.6.1',c:''},
+  {t:'INITIALISING...',c:'bd'},
+  {t:'',c:''},
+  {t:'> CASE_FILE_001 ................. FOUND',c:''},
+  {t:'> FIRST_FLIGHT_LOGS ............. RECOVERED',c:''},
+  {t:'> BLACK_BOX_AUDIO ............... PARTIAL',c:'ba'},
+  {t:'> WING_BLUEPRINTS ............... REDACTED',c:'bd'},
+  {t:'> CLASSIFIED_MATERIAL ........... [SEALED]',c:'bd'},
+  {t:'',c:''},
+  {t:'SUBJECT: ICARUS — OFFICIAL STATUS: DECEASED',c:'bd'},
+  {t:'CASE STATUS: REOPENED 2026',c:'ba'},
+  {t:'',c:''},
+  {t:'⚠  NEW TELEMETRY DETECTED',c:'br'},
+  {t:'⚠  SECOND ASCENT IN PROGRESS',c:'br'},
+  {t:'⚠  PILOT: NON-COMPLIANT',c:'br'},
+  {t:'',c:''},
+  {t:'DASHBOARDS LACK THE MEANS TO SHOW TOTAL SPEEDS.',c:'bc'},
+  {t:'',c:''},
+  {t:'LOADING ARCHIVE...',c:'bd'},
+];
+const bt=document.getElementById('boot-text');
+let li=0;
+function startBoot(){ nextL(); }
+function nextL(){
+  if(li>=lines.length){
+    setTimeout(()=>{ tb.classList.add('hidden'); main.classList.add('visible'); init(); },400);
+    return;
+  }
+  const {t,c}=lines[li];
+  const s=document.createElement('span'); s.className='bl'+(c?' '+c:''); s.textContent=t;
+  bt.appendChild(s); li++;
+  setTimeout(nextL, t===''?70:t.startsWith('⚠')?200:t.startsWith('DASH')?280:80);
+}
+
+function init(){
+  startTelemetry();
+  startGlitch();
+  // Unauth banner
+  setTimeout(()=>{
+    const u=document.getElementById('unauth'); u.classList.add('on');
+    setTimeout(()=>u.classList.remove('on'),3500);
+  },1000);
+}
+
+// TELEMETRY
+function startTelemetry(){
+  function upd(){
+    const a=65+Math.floor(Math.random()*25);
+    const h=55+Math.floor(Math.random()*30);
+    const s=20+Math.floor(Math.random()*35);
+    const st=78+Math.floor(Math.random()*15);
+    document.getElementById('alt-b').style.width=a+'%'; document.getElementById('alt-v').textContent=a+'%';
+    document.getElementById('heat-b').style.width=h+'%'; document.getElementById('heat-v').textContent=h+'%';
+    document.getElementById('sig-b').style.width=s+'%'; document.getElementById('sig-v').textContent=s+'%';
+    document.getElementById('str-b').style.width=st+'%'; document.getElementById('str-v').textContent=st+'%';
+    setTimeout(upd,3000+Math.random()*2000);
+  }
+  upd();
+}
+
+// GLITCH
+function scramble(str){
+  const c='█▓▒░01XRZT#@$ICARUS?!';
+  return str.split('').map(ch=>ch===' '?' ':Math.random()>0.45?c[Math.floor(Math.random()*c.length)]:ch).join('');
+}
+function spawnPx(){
+  const cols=['#FF00FF','#00FFFF','#FF0000','#00FF41'];
+  for(let i=0;i<4+Math.floor(Math.random()*6);i++){
+    const d=document.createElement('div');
+    d.style.cssText=`position:fixed;left:${Math.random()*100}vw;top:${Math.random()*100}vh;width:${2+Math.random()*14}px;height:${1+Math.random()*4}px;background:${cols[Math.floor(Math.random()*cols.length)]};pointer-events:none;z-index:9800;animation:glF .2s ease forwards;`;
+    document.body.appendChild(d); setTimeout(()=>d.remove(),300);
+  }
+}
+// inject glF keyframe
+const gStyle=document.createElement('style');
+gStyle.textContent='@keyframes glF{0%{opacity:1}100%{opacity:0}}';
+document.head.appendChild(gStyle);
+
+function breach(){
+  const o=document.getElementById('breach'); o.classList.add('on');
+  const els=document.querySelectorAll('.sh,.log-n');
+  const orig=[];
+  els.forEach((e,i)=>{orig[i]=e.textContent; e.textContent=scramble(e.textContent);});
+  spawnPx();
+  setTimeout(()=>{ o.classList.remove('on'); els.forEach((e,i)=>e.textContent=orig[i]); },200);
+  scheduleBreach();
+}
+function scheduleBreach(){ setTimeout(breach,20000+Math.random()*40000); }
+function startGlitch(){ scheduleBreach(); }
+
+// Hover scramble
+function addHoverScramble(sel){
+  document.querySelectorAll(sel).forEach(el=>{
+    const orig=el.textContent; let busy=false;
+    el.addEventListener('mouseenter',()=>{
+      if(busy)return; busy=true; let n=0;
+      const iv=setInterval(()=>{
+        el.textContent=n<4?scramble(orig):orig; n++;
+        if(n>5){clearInterval(iv);el.textContent=orig;busy=false;}
+      },45);
+    });
+  });
+}
+setTimeout(()=>{ addHoverScramble('.sh'); addHoverScramble('.log-n'); addHoverScramble('.gh'); },3500);
+
+// SECRET
+function revealSecret(){
+  const d=document.getElementById('secret'); d.classList.toggle('show');
+  if(d.classList.contains('show')) d.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// TERMINAL
+const th=document.getElementById('th');
+const ti=document.getElementById('ti');
+const cmds={
+  help:()=>[{t:'COMMANDS: status · case001 · blackbox · pilot · logs · clear',c:'sys'}],
+  status:()=>[
+    {t:'FLIGHT STATUS: UNKNOWN',c:'err'},{t:'PILOT: ACTIVE — NON-COMPLIANT',c:'err'},
+    {t:'ALTITUDE: INCREASING · HEAT: RISING · SIGNAL: WEAK',c:'res'},
+    {t:'CASE 001: OPEN — INVESTIGATION ACTIVE',c:'res'},
+  ],
+  case001:()=>[
+    {t:'CASE FILE 001 — ICARUS, THE 2ND FLIGHT — RESTRICTED',c:'res'},
+    {t:'CONTENTS: FLIGHT LOGS · BLACK BOX · EVIDENCE · PILOT PROFILE',c:'res'},
+    {t:'NOTE: Subject declared deceased 2019. Status disputed.',c:'sys'},
+  ],
+  blackbox:()=>[
+    {t:'ACCESSING: 2019-04-12_VOICE_MEMO.WAV...',c:'sys'},
+    {t:'"...if you\'re hearing this, it means I didn\'t make it."',c:'res'},
+    {t:'"Or maybe I did."',c:'res'},
+    {t:'— END RECOVERED AUDIO —',c:'sys'},
+  ],
+  pilot:()=>[
+    {t:'SI / ICARUS · JOHANNESBURG, ZA',c:'res'},
+    {t:'FIRST FLIGHT: 2018—2022 · 2ND FLIGHT: ACTIVE',c:'res'},
+    {t:'COMPLIANCE: NON-COMPLIANT',c:'err'},
+    {t:'NOTE: Dashboards lack the means to show total speeds.',c:'sys'},
+  ],
+  logs:()=>[
+    {t:'#001 2018 — INITIAL ASCENT — ARCHIVED',c:'res'},
+    {t:'#002–#018 2019–2022 — ARCHIVED',c:'res'},
+    {t:'#019 2022 — LAST KNOWN — SIGNAL LOST',c:'err'},
+    {t:'#020 2026 — SECOND FLIGHT — ● LIVE',c:'res'},
+  ],
+  clear:()=>{ th.innerHTML=''; return []; },
+};
+function termRun(cmd){
+  const cl=document.createElement('span'); cl.className='tl cmd'; cl.textContent='FA-001 > '+cmd; th.appendChild(cl);
+  const fn=cmds[cmd.toLowerCase().trim()];
+  (fn?fn():[{t:'UNRECOGNISED: '+cmd+' — type help',c:'err'}]).forEach(({t,c})=>{
+    const l=document.createElement('span'); l.className='tl '+(c==='sys'?'sys':c==='err'?'err':c==='cyan'?'cyan':'res'); l.textContent=t; th.appendChild(l);
+  });
+  th.scrollTop=th.scrollHeight;
+}
+ti.addEventListener('keydown',e=>{ if(e.key==='Enter'&&ti.value.trim()){ termRun(ti.value.trim()); ti.value=''; } });
+
+// MEMORY CARD
+function mcYes(){ document.getElementById('mc-pr').textContent='ENTER CONTACT ADDRESS:'; document.getElementById('mc-btns').style.display='none'; document.getElementById('mc-ir').classList.add('show'); document.getElementById('mc-em').focus(); }
+function mcNo(){ document.getElementById('mc-pr').textContent='DATA NOT SAVED. YOU CAN RETURN TO SAVE LATER.'; document.getElementById('mc-btns').style.display='none'; }
+function mcSave(){ const e=document.getElementById('mc-em').value; if(e&&e.includes('@')){ document.getElementById('mc-ir').classList.remove('show'); document.getElementById('mc-ok').style.display='block'; document.getElementById('mc-pr').textContent='MEMORY CARD (8MB) — SLOT 1 — SAVED'; } else { document.getElementById('mc-em').placeholder='VALID ADDRESS REQUIRED'; } }
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&document.activeElement===document.getElementById('mc-em')) mcSave(); });
+</script>
+
+<script>
+// ── CINEMATIC 2: SCROLL REVEAL OBSERVER ──
+const revealEls = document.querySelectorAll('.ev-card, .clip, .log, .pilot-card, .git-card, .telem-strip, .term-wrap, .mc');
+revealEls.forEach(el => {
+  if (el.classList.contains('ev-card') || el.classList.contains('clip') || el.classList.contains('log')) {
+    el.classList.add('reveal-up');
+  }
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('revealed');
+      // Don't unobserve — keep the class
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal-up, .clip, .log, .pilot-card, .git-card, .telem-strip').forEach(el => {
+  observer.observe(el);
+});
+
+// ── CINEMATIC 3: FULL SCREEN BREACH ──
+function triggerCinemaBreach() {
+  const screen = document.getElementById('cinema-breach');
+  const line1 = document.getElementById('cb-line1');
+  const line2 = document.getElementById('cb-line2');
+  const bar = document.getElementById('cb-bar');
+
+  // Reset
+  line1.style.animation = 'none';
+  line2.style.animation = 'none';
+  bar.style.animation = 'none';
+  line1.style.opacity = '0';
+  line2.style.opacity = '0';
+  bar.style.transform = 'scaleX(0)';
+
+  screen.classList.add('on');
+
+  // Stagger elements in
+  setTimeout(() => {
+    line1.style.animation = 'cbFade 0.3s ease forwards';
+  }, 100);
+  setTimeout(() => {
+    bar.style.animation = 'cbBar 0.6s ease forwards';
+  }, 400);
+  setTimeout(() => {
+    line2.style.animation = 'cbFade 0.3s ease forwards';
+  }, 700);
+
+  // Hold then exit
+  setTimeout(() => {
+    screen.style.transition = 'opacity 0.4s ease';
+    screen.classList.remove('on');
+    // Trigger pixel glitch as it exits
+    spawnPx && spawnPx();
+    scheduleCinemaBreach();
+  }, 2200);
+}
+
+function scheduleCinemaBreach() {
+  setTimeout(triggerCinemaBreach, 35000 + Math.random() * 50000);
+}
+
+// Start cinema breach cycle after main loads
+const cinemObs = new MutationObserver(() => {
+  if (document.getElementById('main').classList.contains('visible')) {
+    cinemObs.disconnect();
+    // First breach sooner for dramatic effect
+    setTimeout(triggerCinemaBreach, 8000);
+  }
+});
+cinemObs.observe(document.getElementById('main'), {attributes: true, attributeFilter: ['class']});
+
+// Also add scroll reveal to pilot and git cards manually
+document.querySelectorAll('.pilot-card, .git-card, .telem-strip, .mc').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(30px)';
+  el.style.transition = 'opacity 0.8s ease, transform 0.8s cubic-bezier(0.16,1,0.3,1)';
+  observer.observe(el);
+});
+
+const revObs = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.pilot-card, .git-card, .telem-strip, .mc').forEach(el => revObs.observe(el));
+</script>
+
+<script>
+(function(){
+const au=document.getElementById('bb-au'),btn=document.getElementById('bb-play'),w=document.getElementById('bb-wave'),st=document.getElementById('bb-st'),tm=document.getElementById('bb-tm'),box=document.getElementById('bb');
+const N=64;let h='';for(let i=0;i<N;i++){const v=18+Math.abs(Math.sin(i*1.7)*30+Math.sin(i*.45)*20)+((i*37)%11);h+='<i style="height:'+Math.min(96,v)+'%"></i>'}w.innerHTML=h;
+const bars=[...w.children],f=s=>{s=isFinite(s)?s:0;return String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0')};
+function paint(){const r=au.duration?au.currentTime/au.duration:0;bars.forEach((b,i)=>b.classList.toggle('on',i<r*N));tm.textContent=f(au.currentTime)+' / '+f(au.duration)}
+au.addEventListener('loadedmetadata',()=>{st.textContent='SIGNAL: WEAK — FRAGMENT RECOVERED';paint()});
+au.addEventListener('error',()=>{btn.disabled=true;st.textContent='SIGNAL NOT YET RECOVERED';st.style.color='var(--red)'});
+au.addEventListener('timeupdate',paint);
+au.addEventListener('play',()=>{box.classList.add('play');btn.textContent='❚❚';st.textContent='PLAYBACK — SIGNAL LOCKED'});
+au.addEventListener('pause',()=>{box.classList.remove('play');btn.textContent='▶'});
+au.addEventListener('ended',()=>{box.classList.remove('play');btn.textContent='▶';st.textContent='END OF RECOVERED AUDIO'});
+btn.onclick=()=>au.paused?au.play():au.pause();
+w.onclick=e=>{if(!au.duration)return;const r=w.getBoundingClientRect();au.currentTime=(e.clientX-r.left)/r.width*au.duration;paint()};
+})();
+</script>
+
+<script>
+(function(){
+  var A=[
+   {k:'flight-recorder',n:'FLIGHT RECORDER',c:'ICR-001',st:'RECOVERED — DAMAGED',cl:'RESTRICTED',x:20,y:34,w:26,d:9,z:.9,note:'Orange band intact. Memory module corrupted. Last transmission partially recoverable: "...I can see the light."'},
+   {k:'crt-monitor',n:'CRT MONITOR',c:'ICR-002',st:'RECOVERED — SIGNAL FAINT',cl:'RESTRICTED',x:50,y:28,w:24,d:11,z:.6,note:'Screen cracked, phosphor still live. Playback shows a pilot who is not yet in the manifest.'},
+   {k:'wing-blueprint',n:'WING BLUEPRINT',c:'ICR-003',st:'RECOVERED — WATER DAMAGE',cl:'CLASSIFIED',x:80,y:34,w:26,d:10,z:.8,note:'Titanium frame. Ceramic feathers. Solar resistant coating. Margin notes redacted.'},
+   {k:'memory-card',n:'MEMORY CARD',c:'ICR-004',st:'RECOVERED — PARTIAL',cl:'CONFIDENTIAL',x:30,y:72,w:20,d:12,z:1.1,note:'Eight megabytes. One save file: SECOND FLIGHT. Do not overwrite.'},
+   {k:'pilot-headset',n:'PILOT HEADSET',c:'ICR-005',st:'RECOVERED — WORN',cl:'CONFIDENTIAL',x:62,y:72,w:20,d:8,z:1.2,note:'Still warm. Static carries a voice under it, counting down.'},
+   {k:'sun-disc',n:'SUN DISC',c:'ICR-006',st:'UNCLASSIFIED — DO NOT APPROACH',cl:'FINAL EVIDENCE',x:86,y:74,w:14,d:7,z:.5,note:'Not a relic. A destination. Recovered closer to the sun than anything else in the archive.'}
+  ];
+  var af=document.getElementById('af'),P=document.getElementById('afp'),cur=0,items=[];
+  var base='assets/artifacts/';
+  A.forEach(function(a,i){
+    var b=document.createElement('button');b.className='af-item';b.setAttribute('aria-label',a.n+' — open evidence file');
+    b.style.left=a.x+'%';b.style.top=a.y+'%';b.style.width=a.w+'%';
+    var inner=document.createElement('div');inner.className='af-drift';inner.style.setProperty('--d',a.d+'s');inner.style.setProperty('--dl',(-i*1.3)+'s');
+    inner.innerHTML='<img src="'+base+a.k+'.png" alt="'+a.n+'" loading="lazy" style="'+(a.z>1?'':'filter:')+'"/><span class="af-lbl">'+a.n+'</span>';
+    inner.querySelector('img').removeAttribute('style');
+    b.appendChild(inner);b.onclick=function(){open(i)};af.appendChild(b);items.push(b);
+  });
+  var tx=0,ty=0,cx=0,cy=0;
+  function tgt(x,y){tx=x;ty=y}
+  af.addEventListener('mousemove',function(e){var r=af.getBoundingClientRect();tgt((e.clientX-r.left)/r.width-.5,(e.clientY-r.top)/r.height-.5)});
+  af.addEventListener('mouseleave',function(){tgt(0,0)});
+  af.addEventListener('touchmove',function(e){var t=e.touches[0],r=af.getBoundingClientRect();tgt((t.clientX-r.left)/r.width-.5,(t.clientY-r.top)/r.height-.5)},{passive:true});
+  window.addEventListener('deviceorientation',function(e){if(e.gamma==null)return;tgt(Math.max(-.5,Math.min(.5,e.gamma/60)),Math.max(-.5,Math.min(.5,(e.beta-45)/60)))});
+  (function loop(){cx+=(tx-cx)*.06;cy+=(ty-cy)*.06;
+    items.forEach(function(b,i){var z=A[i].z;b.style.transform='translate('+(-50-cx*z*-14)+'%,'+(-50-cy*z*-14)+'%)'});
+    requestAnimationFrame(loop)})();
+  function open(i){cur=(i+A.length)%A.length;var a=A[cur];
+    document.getElementById('afp-img').src=base+a.k+'.png';document.getElementById('afp-img').alt=a.n;
+    document.getElementById('afp-case').textContent='CASE NO. '+a.c+' · FLIGHT ARCHIVE';
+    document.getElementById('afp-t').textContent=a.n;
+    document.getElementById('afp-rows').innerHTML='<div class="afp-row"><b>DESIGNATION</b>'+a.n+'</div><div class="afp-row"><b>STATUS</b>'+a.st+'</div><div class="afp-row"><b>CLASSIFICATION</b>'+a.cl+'</div>';
+    document.getElementById('afp-note').textContent='ARCHIVE NOTES: '+a.note;
+    P.classList.add('on');P.scrollTop=0;document.body.style.overflow='hidden'}
+  function close(){P.classList.remove('on');document.body.style.overflow=''}
+  document.getElementById('afp-prev').onclick=function(){open(cur-1)};
+  document.getElementById('afp-next').onclick=function(){open(cur+1)};
+  document.getElementById('afp-x').onclick=close;
+  document.addEventListener('keydown',function(e){if(!P.classList.contains('on'))return;if(e.key==='Escape')close();if(e.key==='ArrowLeft')open(cur-1);if(e.key==='ArrowRight')open(cur+1)});
+})();
+</script>
+</body>
+</html>

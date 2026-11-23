@@ -22,7 +22,7 @@
     (function (d) {
       d.classList.add('js');
       var seen = false;
-      try { seen = sessionStorage.getItem('fa-gate') === '1'; } catch (e) {}
+      try { seen = sessionStorage.getItem('fa-gate') === '1' && !/[?&]gate/.test(location.search); } catch (e) {}
       if (!seen) d.classList.add('gate-on');
     })(document.documentElement);
   </script>
@@ -31,9 +31,12 @@
 
   <!-- 1 · THE GATE (shown once per session, skippable) -->
   <div class="gate" id="gate" aria-hidden="true">
-    <div class="gate__lamp"></div>
-    <p class="gate__line"><span>LOADING CASE FILE 001</span><span class="gate__dots"></span></p>
-    <div class="gate__bar"><i></i></div>
+    <canvas class="gate__city" id="city"></canvas>
+    <div class="gate__text">
+      <p class="gate__place">JOHANNESBURG · −26.2041 · 28.0473</p>
+      <p class="gate__line"><span>LOADING CASE FILE 001</span><span class="gate__dots"></span></p>
+      <div class="gate__bar"><i></i></div>
+    </div>
     <p class="gate__skip">TAP TO SKIP</p>
   </div>
 
@@ -94,6 +97,7 @@
     <span>CITIZENS, NOT FOLLOWERS.</span>
   </footer>
 
+  <script src="/js/skyline.js" defer></script>
   <script src="/js/main.js" defer></script>
 </body>
 </html>

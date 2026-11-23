@@ -13,14 +13,16 @@
     if (gateTimer) { clearTimeout(gateTimer); gateTimer = null; }
     try { sessionStorage.setItem('fa-gate', '1'); } catch (e) {}
     gate.classList.add('is-done');
+    if (window.FASkyline) setTimeout(window.FASkyline.stop, 700);
     setTimeout(ready, reduce ? 0 : 250);
     window.removeEventListener('keydown', closeGate);
   }
 
   if (root.classList.contains('gate-on') && gate) {
+    if (window.FASkyline) window.FASkyline.start();
     gate.addEventListener('click', closeGate);
     window.addEventListener('keydown', closeGate);
-    gateTimer = setTimeout(closeGate, reduce ? 400 : 1700);
+    gateTimer = setTimeout(closeGate, reduce ? 900 : 3200);
   } else {
     requestAnimationFrame(ready);
   }
