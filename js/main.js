@@ -32,11 +32,49 @@
 
   function setBar(b, v) { b[0].style.width = v.toFixed(1) + '%'; b[1].textContent = Math.round(v) + '%'; }
 
+  /* ── PHONE WALK-IN: Kling clip as an image sequence, scrubbed by scroll ── */
+  var seq = $('seq'), seqN = +(seq && seq.getAttribute('data-frames')) || 0, seqImgs = [], seqLast = -1, seqOn = false;
+  var portrait = window.matchMedia('(orientation: portrait)');
+  function seqPath(i) { return '/assets/seq/hangar_' + String(i).padStart(3, '0') + '.webp'; }
+  function seqDraw(i) {
+    var img = seqImgs[i];
+    while (i > 0 && !(img && img.complete && img.naturalWidth)) { i--; img = seqImgs[i]; }
+    if (!img || !img.naturalWidth || i === seqLast) return;
+    seqLast = i;
+    var c = seq.getContext('2d'), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var W = seq.clientWidth, H = seq.clientHeight;
+    if (seq.width !== Math.round(W * dpr)) { seq.width = Math.round(W * dpr); seq.height = Math.round(H * dpr); }
+    var s = Math.max(seq.width / img.naturalWidth, seq.height / img.naturalHeight);
+    var w = img.naturalWidth * s, h = img.naturalHeight * s;
+    c.drawImage(img, (seq.width - w) / 2, (seq.height - h) / 2, w, h);
+  }
+  function seqStart() {
+    if (seqOn || !seqN || reduce || !portrait.matches) return;
+    seqOn = true; hangar.classList.add('has-seq');
+    var first = new Image();
+    first.onload = function () { seqImgs[0] = first; seqLast = -1; seqDraw(0); };
+    first.src = seqPath(0);
+    // load the rest in order, a few at a time
+    var next = 1, inflight = 0;
+    function pump() {
+      while (inflight < 6 && next < seqN) {
+        (function (i) { var im = new Image(); inflight++; im.onload = im.onerror = function () { inflight--; seqImgs[i] = im; pump(); }; im.src = seqPath(i); })(next++);
+      }
+    }
+    pump();
+  }
+  seqStart();
+
   function update() {
     ticking = false;
     var y = window.scrollY, vh = window.innerHeight;
     var hh = hangar.offsetHeight || vh;
-    hangar.style.setProperty('--p', reduce ? 0 : Math.min(1, Math.max(0, y / hh)).toFixed(4));
+    if (seqOn) {
+      var q = Math.min(1, Math.max(0, y / Math.max(1, hh - vh)));
+      hangar.style.setProperty('--q', q.toFixed(4));
+      seqLast = -1; seqDraw(Math.round(q * (seqN - 1)));
+    }
+    hangar.style.setProperty('--p', reduce || seqOn ? 0 : Math.min(1, Math.max(0, y / hh)).toFixed(4));
 
     var max = document.documentElement.scrollHeight - vh;
     var j = Math.min(1, Math.max(0, max > 0 ? y / max : 0));
@@ -46,7 +84,7 @@
     setBar(bars.heat, Math.min(99, 12 + Math.pow(j, 2.2) * 82 + sunBoost * 10));
     setBar(bars.sig, Math.min(99, 18 + j * 81));
     setBar(bars.str, Math.max(41, 96 - Math.pow(j, 2) * 48 - sunBoost * 6));
-    alt.classList.toggle('on', y > vh * 0.35);
+    alt.classList.toggle('on', y > (seqOn ? hh - vh * 0.6 : vh * 0.35));
 
     var name = 'HANGAR 2';
     for (var i = 0; i < spaces.length; i++) { if (spaces[i].getBoundingClientRect().top < vh * 0.45) name = spaces[i].getAttribute('data-space'); }
