@@ -18,6 +18,7 @@
   <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-wdth.woff2" crossorigin>
   <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/plex-mono-500.woff2" crossorigin>
   <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/spaces.css">
   <script>
     (function (d) {
       d.classList.add('js');
@@ -29,7 +30,7 @@
 </head>
 <body>
 
-  <!-- 1 · THE GATE (shown once per session, skippable) -->
+  <!-- 0 · THE GATE -->
   <div class="gate" id="gate" aria-hidden="true">
     <canvas class="gate__city" id="city"></canvas>
     <div class="gate__text">
@@ -42,62 +43,279 @@
 
   <header class="bar">
     <a class="bar__mark" href="#hangar">FLIGHT ARCHIVE</a>
-    <span class="bar__ref">FA-001 · FIB HANGAR 2</span>
+    <span class="bar__ref"><span id="space-name">HANGAR 2</span> · USER: GUEST · CLEARANCE 0</span>
   </header>
 
+  <!-- ALTIMETER: driven by the journey, not random -->
+  <aside class="alt" id="alt" aria-label="Flight telemetry">
+    <div class="alt__tape" aria-hidden="true"><div class="alt__ticks" id="alt-ticks"></div><i class="alt__needle"></i></div>
+    <div class="alt__read">
+      <p class="alt__label">ALT</p>
+      <p class="alt__value"><span id="alt-ft">0</span><small> FT</small></p>
+    </div>
+    <dl class="alt__bars">
+      <div><dt>HEAT</dt><dd><i id="b-heat"></i></dd><span id="v-heat">12%</span></div>
+      <div><dt>SIGNAL</dt><dd><i id="b-sig"></i></dd><span id="v-sig">18%</span></div>
+      <div><dt>STRUCT.</dt><dd><i id="b-str"></i></dd><span id="v-str">96%</span></div>
+    </dl>
+  </aside>
+
   <main>
-    <!-- 2 · THE HANGAR -->
-    <section class="hangar" id="hangar" aria-label="The Recovery Hangar">
+    <!-- 1 · THE HANGAR -->
+    <section class="hangar space" id="hangar" data-space="HANGAR 2" aria-label="The Recovery Hangar">
       <div class="hangar__frame">
         <div class="stage" id="stage">
           <picture>
             <source type="image/avif" srcset="/assets/env/hangar_768.avif 768w, /assets/env/hangar_1280.avif 1280w, /assets/env/hangar_1920.avif 1920w, /assets/env/hangar_2752.avif 2752w" sizes="(orientation: portrait) 180vh, 100vw">
             <source type="image/webp" srcset="/assets/env/hangar_768.webp 768w, /assets/env/hangar_1280.webp 1280w, /assets/env/hangar_1920.webp 1920w, /assets/env/hangar_2752.webp 2752w" sizes="(orientation: portrait) 180vh, 100vw">
             <img class="stage__img" src="/assets/env/hangar_1920.jpg" width="2752" height="1536" fetchpriority="high"
-                 alt="Night. A lone pilot in a dark jacket walks into an abandoned aircraft hangar, his shadow stretched across the wet floor, toward a tarp-covered aircraft under a single lamp.">
+                 alt="Night. A lone pilot in a dark jacket walks into an abandoned aircraft hangar toward a tarp-covered aircraft under a single lamp.">
           </picture>
           <div class="stage__lamp" aria-hidden="true"></div>
           <div class="stage__night" aria-hidden="true"></div>
         </div>
         <div class="haze" aria-hidden="true"><i></i><i></i></div>
-        <div class="grain" aria-hidden="true"></div>
         <div class="scrim" aria-hidden="true"></div>
-        <div class="curtain" id="curtain" aria-hidden="true"></div>
+        <div class="curtain" aria-hidden="true"></div>
       </div>
 
       <div class="hangar__copy">
         <p class="label">// FLIGHT INVESTIGATION BUREAU · CASE FILE 001</p>
         <h1 class="title"><span class="title__a">ICARUS</span><span class="title__b">THE 2ND FLIGHT</span></h1>
-        <p class="lede">The case has been reopened. The pilot has come back.</p>
+        <dl class="status">
+          <div><dt>FLIGHT STATUS</dt><dd class="red">UNKNOWN</dd></div>
+          <div><dt>CASE FILE</dt><dd>001</dd></div>
+          <div><dt>LAST CONTACT</dt><dd>2019</dd></div>
+          <div><dt>CASE REOPENED</dt><dd class="amber">2026</dd></div>
+        </dl>
+        <p class="quote">“dashboards lack the means to show my total speeds”</p>
       </div>
 
       <div class="hangar__action">
-        <a class="btn" href="#bay" id="enter"><span>[</span> ENTER THE ARCHIVE <span>]</span></a>
+        <a class="btn" href="#archive"><span>[</span> ACCESS ARCHIVE <span>]</span></a>
       </div>
-
       <div class="hangar__meta" aria-hidden="true">
-        <span>PILOT: ICARUS · STATUS: RETURNED</span>
-        <span>−26.2041 · 28.0473</span>
+        <span>PILOT: ICARUS · STATUS: NON-COMPLIANT</span>
+        <span>SCROLL TO INVESTIGATE ▼</span>
       </div>
     </section>
 
-    <!-- 3 · NEXT SPACE (placeholder until the Evidence Bay is approved) -->
-    <section class="next" id="bay" aria-label="The Evidence Bay">
-      <div class="next__inner">
-        <p class="label">// SPACE 02 · THE EVIDENCE BAY</p>
-        <h2 class="next__title">RECOVERY IN PROGRESS</h2>
-        <p class="next__text">The evidence bay is being restored. Recovered material will be catalogued here, one object for every recording.</p>
-        <a class="btn btn--quiet" href="/legacy/index-live-aug2026.html"><span>[</span> OPEN ARCHIVE V1 <span>]</span></a>
+    <!-- 2 · ARCHIVE TERMINAL -->
+    <section class="space archive" id="archive" data-space="ARCHIVE TERMINAL" aria-label="Archive terminal">
+      <header class="space__head">
+        <p class="label">// 02 · ARCHIVE TERMINAL</p>
+        <h2 class="space__title">THE DIRECTORY</h2>
+        <p class="space__lede">Everything the Bureau recovered from the First Flight. Open a folder. Read the files. Some are sealed.</p>
+      </header>
+
+      <div class="crt" id="crt">
+        <div class="crt__glass">
+          <div class="crt__top">
+            <p>FLIGHT_ARCHIVE // TERMINAL <span class="dim">|</span> v2.6.1</p>
+            <p class="hi">FA-001 · ICARUS, THE 2ND FLIGHT</p>
+            <p class="warn">USER: GUEST <span class="dim">|</span> ACCESS: LIMITED</p>
+          </div>
+          <div class="crt__body">
+            <nav class="crt__tree" id="crt-tree" aria-label="Archive directory">
+              <p class="crt__h">// ARCHIVE DIRECTORY</p>
+            </nav>
+            <article class="crt__view" id="crt-view" aria-live="polite">
+              <button class="crt__back" id="crt-back" type="button">◄ DIRECTORY</button>
+              <p class="crt__vt" id="crt-view-title">NO FILE OPEN</p>
+              <p class="crt__vm" id="crt-view-meta">SELECT A FILE FROM THE DIRECTORY</p>
+              <pre class="crt__vb" id="crt-view-body"></pre>
+            </article>
+          </div>
+          <div class="crt__cli">
+            <div class="crt__hist" id="crt-hist"></div>
+            <label class="crt__prompt"><span>FA-001 &gt;</span>
+              <input id="crt-in" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type help" aria-label="Archive command line"></label>
+          </div>
+        </div>
       </div>
+    </section>
+
+    <!-- 3 · EVIDENCE LOCKER -->
+    <section class="space locker" id="locker" data-space="EVIDENCE LOCKER" aria-label="Evidence locker">
+      <header class="space__head">
+        <p class="label">// 03 · EVIDENCE LOCKER</p>
+        <h2 class="space__title">ON THE TABLE</h2>
+        <p class="space__lede">Physical evidence, tagged and stamped. Tap a card to read it.</p>
+      </header>
+      <div class="table">
+        <article class="card" style="--r:-2.2deg">
+          <span class="stamp">RESTRICTED</span>
+          <p class="card__eye">BLACK BOX RECOVERY #001</p>
+          <h3 class="card__t">VOICE MEMO — 2019-04-12</h3>
+          <p class="card__m">FORMAT: .WAV · DURATION: 1:42<br>SIGNAL QUALITY: 31%<br>CONTENT: PILOT TRANSMISSION</p>
+          <span class="tag">FA-001-01</span>
+        </article>
+        <article class="card" style="--r:1.6deg">
+          <span class="stamp stamp--ok">OPEN</span>
+          <p class="card__eye">FLIGHT LOG #024</p>
+          <h3 class="card__t">ALTITUDE LOG — 2021-11-03</h3>
+          <p class="card__m">ALTITUDE: 622m · VELOCITY: 83m/s<br>HEAT LEVELS: RISING<br>PILOT: NON-COMPLIANT · WARNING IGNORED</p>
+          <span class="tag">FA-001-02</span>
+        </article>
+        <article class="card card--note" style="--r:-0.8deg" tabindex="0" role="button" aria-expanded="false" id="note-card">
+          <span class="stamp stamp--green">RECOVERED</span>
+          <p class="card__eye">EVIDENCE — PILOT NOTES</p>
+          <h3 class="card__t">pilot_notes.txt — UNDATED</h3>
+          <p class="card__m">CLASSIFICATION: UNKNOWN<br>SOURCE: UNKNOWN<br><b>⚠ TAP TO READ</b></p>
+          <div class="card__note">
+            <p>Entry undated.</p>
+            <p>They said I fell. I didn't fall.<br>I landed exactly where I needed to.</p>
+            <p>The sun didn't burn me. It showed me what I was made of.<br>Turns out — something that doesn't melt.</p>
+            <p>Second flight isn't a comeback.<br>It's a continuation.</p>
+            <p class="sig">— SI</p>
+          </div>
+          <span class="tag">FA-001-03</span>
+        </article>
+        <article class="card" style="--r:2.4deg">
+          <span class="stamp">REDACTED</span>
+          <p class="card__eye">WING STRUCTURE — MODEL I</p>
+          <h3 class="card__t">TECHNICAL BLUEPRINT</h3>
+          <p class="card__m">TITANIUM FRAME · CERAMIC FEATHERS<br>SOLAR RESISTANT COATING<br>NOTES: <span class="rx">██████████████</span></p>
+          <span class="tag">FA-001-04</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- 4 · FLIGHT PATH -->
+    <section class="space path" id="path" data-space="FLIGHT PATH" aria-label="Flight path">
+      <header class="space__head">
+        <p class="label">// 04 · FLIGHT PATH</p>
+        <h2 class="space__title">FIRST FLIGHT → SECOND FLIGHT</h2>
+        <p class="space__lede">The recovered record, in order. Real photographs sit beside the Bureau's files.</p>
+      </header>
+      <ol class="timeline" id="timeline">
+        <svg class="timeline__line" id="tl-line" aria-hidden="true" preserveAspectRatio="none"><path id="tl-path"/></svg>
+
+        <li class="ev ev--photo">
+          <p class="ev__date">FILE 000 · EARLIEST RECORD</p>
+          <figure class="photo" style="--r:-1.4deg"><img src="/assets/records/earliest_record.webp" alt="A small child in a baby walker inside a control room full of old monitors, with a sign reading Pilot: Si." loading="lazy" width="900" height="1350"><figcaption>PILOT: SI · BEFORE ANY FLIGHT</figcaption></figure>
+        </li>
+        <li class="ev">
+          <p class="ev__date">2018 · FLIGHT LOG #001</p>
+          <h3 class="ev__t">FIRST FLIGHT — INITIAL ASCENT</h3>
+          <p class="ev__b">Status: archived.</p>
+        </li>
+        <li class="ev ev--photo ev--real">
+          <p class="ev__date">08 OCT 2019 · RECOVERED PHOTOGRAPH</p>
+          <figure class="photo" style="--r:1.8deg"><img src="/assets/records/record_2019-10-08.webp" alt="Si in goggles and a respirator mask in front of a rail of blue shirts." loading="lazy" width="1080" height="716"><figcaption>“I AM AN INTERDIMENSIONAL BEING” · PHOTO: MAGICOR PHOTOGRAPHY</figcaption></figure>
+        </li>
+        <li class="ev ev--clip">
+          <p class="ev__date">JUL — AUG 2019 · RECOVERED PRESS</p>
+          <div class="clips">
+            <div class="clip" style="--r:-1.5deg"><p class="clip__pub">AEGEAN SECTOR DAILY · 2019-07-18</p><p class="clip__h">LOCAL MYTH OR TRUTH? THE ICARUS INCIDENT</p><p class="clip__b">Witnesses report an unidentified aerial event over the sector. Officials deny involvement. Bureau declines comment.</p></div>
+            <div class="clip" style="--r:1deg"><p class="clip__pub">WORLD WIRE · 2019-07-19</p><p class="clip__h">GOVERNMENT DENIES SECOND FLIGHT CLAIMS</p><p class="clip__b">A spokesperson confirmed the subject is deceased. New signals detected in the region remain unexplained.</p></div>
+            <div class="clip" style="--r:-0.6deg"><p class="clip__pub">TECH RECOVERY DIGEST · 2019-08-02</p><p class="clip__h">RECOVERED DEBRIS CONFIRMS ADVANCED TECHNOLOGY</p><p class="clip__b">Material recovered near the Aegean sector does not match any known aerospace manufacturer. Investigation ongoing.</p></div>
+          </div>
+        </li>
+        <li class="ev ev--real">
+          <p class="ev__date">08 DEC 2019 · RELEASE</p>
+          <h3 class="ev__t">THE VISION IS METRO</h3>
+          <p class="ev__b">A project. Prod. by Novexbeats.</p>
+        </li>
+        <li class="ev ev--photo ev--real">
+          <p class="ev__date">FIRST FLIGHT · SESSION RECORD</p>
+          <figure class="photo" style="--r:-2deg"><img src="/assets/records/record_studio.webp" alt="Si recording at a studio microphone, wearing headphones." loading="lazy" width="1080" height="995"><figcaption>“STILL TRYNA EARN MY STRIPES”</figcaption></figure>
+        </li>
+        <li class="ev ev--lost">
+          <p class="ev__date">2022 · FLIGHT LOG #019 · LAST KNOWN</p>
+          <h3 class="ev__t">SIGNAL LOST</h3>
+          <p class="ev__b">Altitude: <span class="rx">█████████</span></p>
+        </li>
+        <li class="ev ev--live">
+          <p class="ev__date"><i class="pulse"></i>2026 · FLIGHT LOG #020 · LIVE</p>
+          <h3 class="ev__t">SECOND FLIGHT</h3>
+          <p class="ev__b">Altitude increasing. Heat rising. Pilot non-compliant. In progress.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- 5 · PERSONNEL FILE -->
+    <section class="space personnel" id="personnel" data-space="PERSONNEL FILE" aria-label="Personnel file">
+      <header class="space__head">
+        <p class="label">// 05 · PERSONNEL FILE</p>
+        <h2 class="space__title">SUBJECT: ICARUS</h2>
+      </header>
+      <div class="folder">
+        <div class="folder__tab">FIB / PERSONNEL / 001</div>
+        <figure class="folder__photo">
+          <span class="clipper" aria-hidden="true"></span>
+          <img src="/assets/records/pilot_icarus.webp" alt="Portrait of Si in profile in a dark pilot jacket against an orange sun, with a patch reading Si a.k.a. Pilot Icarus." loading="lazy" width="1000" height="1250">
+          <figcaption class="stamp stamp--block">SUBJECT: ICARUS</figcaption>
+        </figure>
+        <dl class="dossier">
+          <div><dt>DESIGNATION</dt><dd>SI / ICARUS</dd></div>
+          <div><dt>ORIGIN</dt><dd>JOHANNESBURG, ZA</dd></div>
+          <div><dt>FIRST FLIGHT</dt><dd>2018 — 2022</dd></div>
+          <div><dt>STATUS</dt><dd class="green">2ND FLIGHT ACTIVE</dd></div>
+          <div><dt>COMPLIANCE</dt><dd class="red">NON-COMPLIANT</dd></div>
+          <div><dt>LOG ENTRY</dt><dd>COMMITMENT IS THE FUEL.</dd></div>
+          <div class="wide"><dt>NOTE</dt><dd class="hand">Declared deceased 2019. Telemetry contradicts record.</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- 6 · THE COCKPIT / BLACK BOX -->
+    <section class="space cockpit" id="cockpit" data-space="COCKPIT" aria-label="The cockpit">
+      <div class="sun" id="sun" aria-hidden="true"></div>
+      <header class="space__head">
+        <p class="label">// 06 · THE COCKPIT</p>
+        <h2 class="space__title">BLACK BOX</h2>
+        <p class="space__lede">Recovered audio fragment. Unreleased. Press play and watch the sun.</p>
+      </header>
+      <div class="recorder" id="bb">
+        <div class="recorder__band"><span>FLIGHT RECORDER</span><span>DO NOT OPEN</span></div>
+        <div class="recorder__face">
+          <p class="recorder__id">BLACK BOX RECOVERY #002 · UNRELEASED · SIGNAL FRAGMENT</p>
+          <p class="recorder__t">FRAGMENT 001 — SOURCE UNKNOWN</p>
+          <div class="recorder__row">
+            <button class="recorder__play" id="bb-play" type="button" aria-label="Play recovered audio">▶</button>
+            <div class="recorder__wave" id="bb-wave" aria-hidden="true"></div>
+          </div>
+          <div class="recorder__meta"><span id="bb-st">SIGNAL: STANDBY</span><span id="bb-tm">00:00 / 00:00</span></div>
+        </div>
+        <audio id="bb-au" preload="metadata" src="/assets/audio/blackbox-001.mp3"></audio>
+      </div>
+    </section>
+
+    <!-- 7 · CITIZENS REGISTRY -->
+    <section class="space registry" id="registry" data-space="CITIZENS REGISTRY" aria-label="Citizens registry">
+      <header class="space__head">
+        <p class="label">// 07 · CITIZENS REGISTRY</p>
+        <h2 class="space__title">CITIZENS, NOT FOLLOWERS.</h2>
+        <p class="space__lede">Register with the archive and receive your citizen ID.</p>
+      </header>
+      <div class="memcard" id="memcard">
+        <div class="memcard__hd"><span>MEMORY CARD (8MB) — SLOT 1</span><span>FLIGHT INVESTIGATION BUREAU</span></div>
+        <div class="memcard__slot"><span class="memcard__icon" aria-hidden="true"></span><div><p>FLIGHT_ARCHIVE_DATA</p><p class="dim" id="mc-free">STATUS: EMPTY · 8192KB FREE</p></div></div>
+        <form class="memcard__form" id="mc-form" autocomplete="on">
+          <label><span>CITIZEN NAME</span><input name="name" id="mc-name" required maxlength="28" placeholder="YOUR NAME" autocomplete="nickname"></label>
+          <button class="btn" type="submit"><span>[</span> SAVE TO MEMORY CARD <span>]</span></button>
+        </form>
+        <div class="idcard" id="idcard" hidden>
+          <canvas id="id-canvas" width="1080" height="680" aria-label="Your citizen ID card"></canvas>
+          <div class="idcard__actions">
+            <a class="btn" id="id-save" download="flight-archive-citizen-id.png"><span>[</span> SAVE ID <span>]</span></a>
+          </div>
+          <p class="dim small">Your ID is saved on this device only. The registry goes live with the release.</p>
+        </div>
+      </div>
+      <canvas class="registry__city" id="city-end" aria-hidden="true"></canvas>
     </section>
   </main>
 
   <footer class="foot">
     <span>FLIGHT INVESTIGATION BUREAU · ARCHIVE REF FA-2026-001</span>
+    <span class="red"><i class="pulse"></i>INVESTIGATION ACTIVE</span>
     <span>CITIZENS, NOT FOLLOWERS.</span>
   </footer>
 
   <script src="/js/skyline.js" defer></script>
+  <script src="/js/archive.js" defer></script>
   <script src="/js/main.js" defer></script>
 </body>
 </html>
