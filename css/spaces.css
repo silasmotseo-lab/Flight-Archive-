@@ -448,3 +448,19 @@ html.js .ev.reveal.in .photo img { filter: saturate(0.8) contrast(1.05); }
 .console.go .console__ui, .console.go .console__tag { transition: opacity .3s; opacity: 0; }
 @keyframes cvFlash { 0%,38% { opacity: 0 } 58%,66% { opacity: 1 } 100% { opacity: 0 } }
 @media (prefers-reduced-motion: reduce) { .console__glow, .console__scan::before, .console__start { animation: none; } }
+
+/* ── RECOVERED FOOTAGE · the trailer as a found tape ── */
+.footage { padding-bottom: 12svh; }
+.tape { position: relative; width: min(420px, 100%); margin: 28px auto 0; aspect-ratio: 9 / 16; background: #000; border: 1px solid rgba(233,227,210,0.18);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 6px #111312, 0 0 0 7px rgba(233,227,210,0.08); overflow: hidden; }
+.tape video { width: 100%; height: 100%; display: block; object-fit: cover; }
+.tape::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(to bottom, rgba(0,0,0,0.18) 0 1px, transparent 1px 3px); }
+.tape__hud { position: absolute; left: 14px; right: 14px; top: 12px; z-index: 2; display: flex; justify-content: space-between; font: 500 11px/1 var(--mono); letter-spacing: 0.2em; color: var(--paper); text-shadow: 0 1px 2px #000; }
+.tape__rec i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #e0402e; margin-right: 8px; vertical-align: 1px; }
+.tape.on .tape__rec i { animation: beacon 1s steps(1) infinite; }
+.tape__play { position: absolute; left: 50%; top: 50%; translate: -50% -50%; z-index: 2; font: 500 14px/1 var(--mono); letter-spacing: 0.3em; color: var(--amber);
+  background: rgba(10,11,10,0.7); border: 1px solid rgba(227,160,72,0.6); padding: 18px 24px 18px 28px; cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+.tape__play b { font-weight: 400; margin-right: 6px; }
+.tape.on .tape__play { opacity: 0; pointer-events: none; }
+.tape__bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,0.12); z-index: 2; }
+.tape__bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--amber), var(--sun)); }

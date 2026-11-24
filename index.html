@@ -323,6 +323,21 @@
       </div>
     </section>
 
+    <!-- 6.5 · RECOVERED FOOTAGE: the trailer -->
+    <section class="space footage" id="footage" data-space="RECOVERED FOOTAGE" aria-label="Recovered footage">
+      <header class="space__head">
+        <p class="label">// 06.5 · RECOVERED FOOTAGE</p>
+        <h2 class="space__title">CASE FILE 001</h2>
+        <p class="space__lede">Tape recovered from the hangar. 45 seconds. Sound on.</p>
+      </header>
+      <div class="tape" id="tape">
+        <video id="tape-v" src="/assets/video/case_file_001.mp4" poster="/assets/video/case_file_001_poster.jpg" playsinline preload="none" width="720" height="1280"></video>
+        <div class="tape__hud" aria-hidden="true"><span class="tape__rec"><i></i>PLAY</span><span id="tape-tc">00:00 / 00:45</span></div>
+        <button class="tape__play" id="tape-play" type="button"><b>▶</b> PLAY TAPE</button>
+        <div class="tape__bar" aria-hidden="true"><i id="tape-prog"></i></div>
+      </div>
+    </section>
+
     <!-- 7 · CITIZENS REGISTRY -->
     <section class="space registry" id="registry" data-space="CITIZENS REGISTRY" aria-label="Citizens registry">
       <header class="space__head">
@@ -358,6 +373,7 @@
   <script src="/js/skyline.js" defer></script>
   <script src="/js/archive.js" defer></script>
   <script src="/js/console.js" defer></script>
+  <script src="/js/tape.js" defer></script>
   <script src="/js/main.js" defer></script>
   <script src="/js/motion.js" defer></script>
   <script src="/js/pickups.js" defer></script>
