@@ -215,3 +215,11 @@ html.js.ready .title__a { letter-spacing: 0.32em; }
   .hangar.has-seq .curtain { opacity: calc((var(--q) - 0.82) * 6); }
   .hangar.has-seq .scrim { opacity: calc(1 - var(--q) * 0.6); }
 }
+
+/* phone: title at the top, status grid low, so the face is clear on first load */
+@media (orientation: portrait) {
+  .hangar__copy { grid-row: 2 / 4; display: flex; flex-direction: column; }
+  .hangar__copy .status { margin-top: auto; background: rgba(10,11,10,0.35); }
+  .hangar__copy .quote { margin: 12px 0 18px; font-size: 14px; }
+  .hangar__action { grid-row: 4; }
+}

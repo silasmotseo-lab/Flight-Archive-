@@ -52,7 +52,7 @@ html.js .reveal { opacity: 0; translate: 0 24px; transition: opacity 0.9s ease, 
 html.js .reveal.in { opacity: 1; translate: 0 0; }
 
 /* ── 2 · ARCHIVE TERMINAL (the V1 look, inside a real CRT) ── */
-.archive { background: radial-gradient(80% 60% at 50% 55%, #0f1510 0%, var(--night) 70%); }
+.archive { background: radial-gradient(80% 60% at 50% 55%, rgba(15,21,16,0.85) 0%, rgba(10,11,10,0.55) 70%); }
 .crt { position: relative; max-width: 1100px; padding: clamp(10px, 1.6vw, 22px); border-radius: 26px;
   background: linear-gradient(160deg, #2a2d29, #121412 60%); box-shadow: 0 40px 90px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06); }
 .crt__glass { position: relative; overflow: hidden; border-radius: 16px; background: radial-gradient(120% 90% at 50% 40%, #07160c 0%, #030805 75%);
@@ -98,7 +98,7 @@ html.js .reveal.in { opacity: 1; translate: 0 0; }
 .crt__prompt input::placeholder { color: var(--crt-dim); }
 
 /* ── 3 · EVIDENCE LOCKER ───────────────────────────── */
-.locker { background: var(--night); }
+.locker { background: transparent; }
 .table { position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: clamp(20px, 2.6vw, 36px);
   padding: clamp(28px, 4vw, 56px); border-radius: 6px;
   background:
@@ -130,7 +130,7 @@ html.js .reveal.in { opacity: 1; translate: 0 0; }
 .tag::before { content: ""; position: absolute; left: 7px; top: 50%; width: 5px; height: 5px; margin-top: -2.5px; border-radius: 50%; background: #1a1c1b; }
 
 /* ── 4 · FLIGHT PATH ───────────────────────────────── */
-.path { background: linear-gradient(180deg, var(--night), #0d0f0e 50%, var(--night)); }
+.path { background: transparent; }
 .timeline { position: relative; list-style: none; max-width: 980px; padding-left: clamp(48px, 9vw, 120px); }
 .timeline__line { position: absolute; left: 0; top: 0; width: clamp(40px, 8vw, 100px); height: 100%; overflow: visible; }
 .timeline__line path { fill: none; stroke: var(--amber); stroke-width: 1.5; filter: drop-shadow(0 0 4px rgba(227,160,72,0.6)); }
@@ -155,7 +155,7 @@ html.js .reveal.in { opacity: 1; translate: 0 0; }
 .clip__b { font-size: 14px; line-height: 1.55; }
 
 /* ── 5 · PERSONNEL FILE ────────────────────────────── */
-.personnel { background: radial-gradient(70% 60% at 40% 50%, rgba(255,120,40,0.08), transparent 70%), var(--night); }
+.personnel { background: transparent; }
 .folder { position: relative; max-width: 1040px; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(24px, 4vw, 56px); align-items: start;
   padding: clamp(28px, 4vw, 52px); background: linear-gradient(170deg, #c9a86a, #b38f52); box-shadow: 0 40px 90px rgba(0,0,0,0.7); border-radius: 4px; rotate: -0.6deg; }
 .folder__tab { position: absolute; top: -30px; left: 40px; padding: 8px 22px; background: #c9a86a; border-radius: 6px 6px 0 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; color: #3b2c12; }
@@ -173,7 +173,7 @@ html.js .reveal.in { opacity: 1; translate: 0 0; }
 .dossier .hand { font-style: italic; color: #1f3a7a; rotate: -1deg; }
 
 /* ── 6 · COCKPIT / BLACK BOX ───────────────────────── */
-.cockpit { min-height: 110vh; overflow: hidden; background: linear-gradient(180deg, #05070a 0%, #0b0e14 55%, #130c08 100%); }
+.cockpit { min-height: 110vh; background: transparent; }
 .sun { position: absolute; left: 50%; top: 82%; width: 120vmax; aspect-ratio: 1; translate: -50% calc(-1 * var(--sun, 0) * 55%); border-radius: 50%; pointer-events: none;
   background: radial-gradient(closest-side, rgba(255,240,210,0.95), #FF8A2A 22%, #FF5A1F 40%, rgba(255,90,31,0.35) 58%, rgba(255,90,31,0.08) 72%, transparent 76%);
   opacity: calc(0.25 + var(--sun, 0) * 0.75); filter: blur(2px); }
@@ -193,7 +193,7 @@ html.js .reveal.in { opacity: 1; translate: 0 0; }
 .recorder__meta { display: flex; justify-content: space-between; margin-top: 14px; font-size: 11px; letter-spacing: 0.18em; color: var(--ash); }
 
 /* ── 7 · CITIZENS REGISTRY ─────────────────────────── */
-.registry { min-height: 100vh; padding-bottom: 0; background: #000; overflow: hidden; }
+.registry { min-height: 100vh; padding-bottom: 0; background: linear-gradient(180deg, transparent, rgba(0,0,0,0.85) 45%, #000); overflow: hidden; }
 .memcard { position: relative; z-index: 2; max-width: 620px; padding: 24px; border: 1px solid rgba(233,227,210,0.18); background: linear-gradient(160deg, rgba(20,22,40,0.85), rgba(6,7,12,0.9));
   font-family: var(--mono); box-shadow: 0 30px 70px rgba(0,0,0,0.6); }
 .memcard__hd { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 11px; letter-spacing: 0.18em; color: var(--ash); padding-bottom: 14px; border-bottom: 1px solid rgba(233,227,210,0.12); }
@@ -234,4 +234,38 @@ html.js .reveal.in { opacity: 1; translate: 0 0; }
 @media (prefers-reduced-motion: reduce) { body::after { animation: none; } }
 
 [hidden] { display: none !important; }
-.cockpit::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 30vh; background: linear-gradient(transparent, #000); pointer-events: none; z-index: 1; }
+.cockpit::after { display: none; content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 30vh; background: linear-gradient(transparent, #000); pointer-events: none; z-index: 1; }
+
+/* ── THE ASCENT ─────────────────────────────────────
+   --j: journey 0 (hangar floor) → 1 (top). The sun starts as a far point
+   and grows until it fills the sky at the cockpit; the sky warms with it. */
+main, .foot { position: relative; z-index: 1; }
+.ascent { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; --s: calc(var(--j) * var(--j)); }
+.ascent__sky { position: absolute; inset: 0;
+  background: linear-gradient(180deg,
+    rgb(calc(6 + 40 * var(--s)) calc(8 + 10 * var(--s)) calc(14 - 4 * var(--s))) 0%,
+    rgb(calc(10 + 90 * var(--s)) calc(11 + 34 * var(--s)) 12) 100%); }
+.ascent__sun { position: absolute; left: 74%; top: 30%;
+  width: calc(4vmin + 150vmin * var(--s)); aspect-ratio: 1; translate: -50% -50%;
+  opacity: calc(0.15 + var(--j) * 0.95); }
+.ascent__corona { position: absolute; inset: -70%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255,120,40,0.45), rgba(255,90,31,0.14) 45%, transparent 72%);
+  animation: corona 6s ease-in-out infinite alternate; }
+.ascent__disc { position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(closest-side, #FFE9C4 0%, #FFB05A 38%, #FF7A2A 66%, #FF5A1F 84%, rgba(255,90,31,0) 100%);
+  box-shadow: 0 0 calc(30px + 120px * var(--j)) rgba(255,110,40,0.55); }
+@keyframes corona { to { transform: scale(1.08); opacity: 0.8; } }
+.ascent__heat { position: absolute; inset: 0; opacity: calc(var(--s) * 0.5); mix-blend-mode: screen;
+  background: radial-gradient(90% 70% at 74% 30%, rgba(255,120,40,0.35), transparent 70%); }
+/* keep text readable as the light grows */
+.space__head { position: relative; }
+.space__head::before { content: ""; position: absolute; inset: -40px -60px; z-index: -1; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(10,11,10,calc(0.2 + 0.6 * var(--j, 0))), transparent); }
+@media (orientation: portrait), (max-width: 700px) {
+  .ascent__sun { left: 70%; top: 22%; width: calc(6vmin + 170vmin * var(--s)); }
+  .ascent__heat { background: radial-gradient(100% 60% at 70% 22%, rgba(255,120,40,0.35), transparent 70%); }
+}
+/* altimeter: the sun marker on the tape */
+.alt__sunmark { position: absolute; left: 44px; top: 14px; width: 12px; height: 12px; border-radius: 50%;
+  background: #FF7A2A; box-shadow: 0 0 calc(4px + 16px * var(--j, 0)) #FF7A2A; opacity: calc(0.35 + var(--j, 0) * 0.65); }
+@media (prefers-reduced-motion: reduce) { .ascent__corona { animation: none; } }

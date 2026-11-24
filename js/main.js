@@ -79,6 +79,10 @@
     var max = document.documentElement.scrollHeight - vh;
     var j = Math.min(1, Math.max(0, max > 0 ? y / max : 0));
     var altitude = Math.round(Math.pow(j, 1.35) * 32500 / 10) * 10;
+    // the ascent: start once you leave the hangar, peak at the cockpit
+    var hEnd = hangar.offsetHeight, cTop = cockpit.offsetTop + cockpit.offsetHeight * 0.6;
+    var a = Math.min(1, Math.max(0, (y - hEnd * 0.8) / Math.max(1, cTop - hEnd * 0.8)));
+    root.style.setProperty('--j', Math.min(1, a + sunBoost * 0.15).toFixed(4));
     ftEl.textContent = altitude.toLocaleString('en-US');
     ticks.style.transform = 'translateY(' + (-(altitude / 32500) * 3600) + 'px)';
     setBar(bars.heat, Math.min(99, 12 + Math.pow(j, 2.2) * 82 + sunBoost * 10));
