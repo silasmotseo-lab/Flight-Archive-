@@ -16,7 +16,7 @@
     window.removeEventListener('keydown', closeGate);
   }
   if (root.classList.contains('gate-on') && gate) {
-    if (window.FASkyline) { gateCity = window.FASkyline.create($('city'), { horizon: 0.995, height: 0.16, flat: true }); gateCity.start(); }
+    if (window.FASkyline) { gateCity = window.FASkyline.create($('city'), { horizon: 0.93, height: 0.2, flat: true }); gateCity.start(); }
     gate.addEventListener('click', closeGate);
     window.addEventListener('keydown', closeGate);
     gateTimer = setTimeout(closeGate, reduce ? 900 : 3200);

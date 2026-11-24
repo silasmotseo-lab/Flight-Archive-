@@ -80,9 +80,10 @@
       for (var i = 0; i < bars.length; i++) {
         var b = bars[i], rise = reduce ? 1 : ease((t - b.delay) / 0.7);
         if (rise <= 0) continue;
-        var base = b.h * maxH * rise;
-        var amp = b.lm ? 0.02 : 0.075 + level * 0.08;
-        var lvl = 0.5 + 0.5 * Math.sin(t * b.f1 + b.ph) * Math.sin(t * b.f2 * 0.37 + b.ph * 2);
+        var base = (opts.flat ? 0.08 : b.h) * maxH * rise;
+        var amp = opts.flat ? 0.75 : (b.lm ? 0.02 : 0.075 + level * 0.08);
+        var lvl = opts.flat ? Math.pow(Math.abs(Math.sin(t * (b.f1 * 1.6 + i % 7 * 0.21) + i * 0.37) * Math.sin(t * b.f2 * 0.5 + i * 0.11)), 0.8)
+          : 0.5 + 0.5 * Math.sin(t * b.f1 + b.ph) * Math.sin(t * b.f2 * 0.37 + b.ph * 2);
         var top = horizon - base - (lvl * 0.75 + beat * 0.25) * amp * maxH * rise;
         var bg = ctx.createLinearGradient(0, top, 0, horizon);
         bg.addColorStop(0, b.lm ? 'rgba(233,190,120,0.95)' : 'rgba(227,160,72,0.85)');
