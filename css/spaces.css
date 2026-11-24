@@ -312,3 +312,64 @@ main, .foot { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) { .space__title, .ev__t { filter: none; } .card::after, .clip::after, .photo::after, .dossier::after { animation: none; } }
 
 .clip, .photo, .dossier { position: relative; }
+
+/* ── MOTION (free, code-only) ───────────────────────── */
+/* CRT power-on */
+.crt--off .crt__glass { transform: scale(0.5, 0.006); filter: brightness(5); }
+.crt--on .crt__glass { animation: crtOn 0.85s cubic-bezier(.3,.7,.2,1) both; }
+@keyframes crtOn {
+  0% { transform: scale(0.5, 0.006); filter: brightness(5); }
+  35% { transform: scale(1, 0.006); filter: brightness(5); }
+  62% { transform: scale(1, 1.03); filter: brightness(2.2); }
+  100% { transform: none; filter: none; }
+}
+.crt--off .crt__top p, .crt--on .crt__top p:not(.typed), .crt--off .crt__h, .crt--on .crt__h:not(.typed) { visibility: hidden; }
+.crt__top p.typed, .crt__h.typed { animation: type 0.36s steps(28, end) both; }
+@keyframes type { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+.crt--off .dir, .crt--on .dir:not(.shown) { opacity: 0; }
+.dir.shown { animation: dirIn 0.32s steps(6, end) both; }
+.dir.shown .dir__name { animation: type 0.3s steps(20, end) both; }
+@keyframes dirIn { from { opacity: 0; } to { opacity: 1; } }
+.crt--off .crt__cli, .crt--on:not(.crt--ready) .crt__cli { opacity: 0; }
+.crt__cli { transition: opacity 0.4s; }
+/* slow interference band rolling down the glass */
+.crt__roll { position: absolute; left: 0; right: 0; top: 0; height: 18%; z-index: 4; pointer-events: none;
+  background: linear-gradient(to bottom, transparent, rgba(108,240,143,0.07) 45%, rgba(160,255,190,0.12) 50%, rgba(108,240,143,0.07) 55%, transparent);
+  animation: roll 9s linear infinite; }
+@keyframes roll { from { transform: translateY(-120%); } to { transform: translateY(620%); } }
+/* phosphor afterglow on the typed text */
+.crt__vb { text-shadow: 0 0 6px rgba(108,240,143,0.55), 0 0 14px rgba(108,240,143,0.25), 1px 0 2px rgba(108,240,143,0.3); }
+
+/* evidence cards drop onto the table; stamps thud on */
+.table .card:nth-child(1) { --d: 0s; } .table .card:nth-child(2) { --d: 0.18s; } .table .card:nth-child(3) { --d: 0.36s; } .table .card:nth-child(4) { --d: 0.54s; }
+html.js .card.reveal { opacity: 0; translate: 0 -70px; scale: 1.14; rotate: calc(var(--r, 0deg) * 4);
+  transition: opacity 0.3s ease var(--d, 0s), translate 0.65s cubic-bezier(.3,1.45,.5,1) var(--d, 0s), scale 0.65s cubic-bezier(.3,1.45,.5,1) var(--d, 0s), rotate 0.65s ease var(--d, 0s); }
+html.js .card.reveal.in { opacity: 1; translate: 0 0; scale: 1; rotate: var(--r, 0deg); }
+html.js .card.reveal .stamp { opacity: 0; }
+html.js .card.reveal.in .stamp { animation: thud 0.32s cubic-bezier(.2,.9,.3,1.3) both; animation-delay: calc(var(--d, 0s) + 0.55s); }
+@keyframes thud { from { opacity: 0; scale: 2.6; } to { opacity: 0.85; scale: 1; } }
+
+/* photos develop like Polaroids */
+html.js .ev.reveal .photo img { filter: brightness(2.8) saturate(0) contrast(0.55) blur(3px); transition: filter 2.8s ease 0.35s; }
+html.js .ev.reveal.in .photo img { filter: saturate(0.8) contrast(1.05); }
+
+/* redactions: a marker stroke is drawn across as you arrive */
+.rx { color: transparent !important; text-shadow: none !important; background: linear-gradient(#17140f, #17140f) left center / 0% 88% no-repeat !important; transition: background-size 0.9s steps(14) 0.7s; }
+.ev .rx { background-image: linear-gradient(#C8352B, #C8352B) !important; }
+.in .rx { background-size: 100% 88% !important; }
+
+/* personnel: the manila cover flips open */
+.folder { perspective: 1800px; }
+.folder__cover { position: absolute; inset: 0; z-index: 6; border-radius: 4px; transform-origin: left center; backface-visibility: hidden;
+  background: linear-gradient(170deg, #d3b475, #b8955a); box-shadow: 0 10px 30px rgba(0,0,0,0.35), inset 0 0 60px rgba(90,60,20,0.25);
+  display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 12px; text-align: center;
+  font-family: var(--mono); color: #3b2c12; transition: transform 1.5s cubic-bezier(.6,0,.2,1) 0.2s; }
+.folder__ct { font-size: clamp(18px, 3vw, 28px); letter-spacing: 0.3em; font-weight: 500; }
+.folder__cs { font-size: 11px; letter-spacing: 0.22em; }
+.folder__stamp { position: static; rotate: -6deg; font-size: 14px; padding: 6px 14px; margin-top: 10px; background: transparent; }
+.folder.open .folder__cover { transform: rotateY(-178deg); pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .folder__cover, .crt__roll { display: none; }
+  .rx { background-size: 100% 88% !important; transition: none; }
+}

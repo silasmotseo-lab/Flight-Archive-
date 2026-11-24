@@ -107,9 +107,9 @@
         <h1 class="title"><span class="title__a">ICARUS</span><span class="title__b">THE 2ND FLIGHT</span></h1>
         <dl class="status">
           <div><dt>FLIGHT STATUS</dt><dd class="red">UNKNOWN</dd></div>
-          <div><dt>CASE FILE</dt><dd>001</dd></div>
-          <div><dt>LAST CONTACT</dt><dd>2019</dd></div>
-          <div><dt>CASE REOPENED</dt><dd class="amber">2026</dd></div>
+          <div><dt>CASE FILE</dt><dd data-count="001">001</dd></div>
+          <div><dt>LAST CONTACT</dt><dd data-count="2019">2019</dd></div>
+          <div><dt>CASE REOPENED</dt><dd class="amber" data-count="2026">2026</dd></div>
         </dl>
         <p class="quote">“dashboards lack the means to show my total speeds”</p>
       </div>
@@ -265,6 +265,7 @@
         <h2 class="space__title">SUBJECT: ICARUS</h2>
       </header>
       <div class="folder">
+        <div class="folder__cover" aria-hidden="true"><span class="folder__ct">PERSONNEL FILE</span><span class="folder__cs">FIB · 001 · CONFIDENTIAL</span><span class="stamp folder__stamp">EYES ONLY</span></div>
         <div class="folder__tab">FIB / PERSONNEL / 001</div>
         <figure class="folder__photo">
           <span class="clipper" aria-hidden="true"></span>
@@ -314,7 +315,7 @@
       </header>
       <div class="memcard" id="memcard">
         <div class="memcard__hd"><span>MEMORY CARD (8MB) — SLOT 1</span><span>FLIGHT INVESTIGATION BUREAU</span></div>
-        <div class="memcard__slot"><span class="memcard__icon" aria-hidden="true"></span><div><p>FLIGHT_ARCHIVE_DATA</p><p class="dim" id="mc-free">STATUS: EMPTY · 8192KB FREE</p></div></div>
+        <div class="memcard__slot"><span class="memcard__icon" aria-hidden="true"></span><div><p>FLIGHT_ARCHIVE_DATA</p><p class="dim" id="mc-free">STATUS: EMPTY · <span data-count="8192">8192</span>KB FREE</p></div></div>
         <form class="memcard__form" id="mc-form" autocomplete="on">
           <label><span>CITIZEN NAME</span><input name="name" id="mc-name" required maxlength="28" placeholder="YOUR NAME" autocomplete="nickname"></label>
           <button class="btn" type="submit"><span>[</span> SAVE TO MEMORY CARD <span>]</span></button>
@@ -340,5 +341,6 @@
   <script src="/js/skyline.js" defer></script>
   <script src="/js/archive.js" defer></script>
   <script src="/js/main.js" defer></script>
+  <script src="/js/motion.js" defer></script>
 </body>
 </html>
