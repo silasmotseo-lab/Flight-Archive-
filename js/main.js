@@ -17,9 +17,33 @@
   }
   if (root.classList.contains('gate-on') && gate) {
     if (window.FASkyline) { gateCity = window.FASkyline.create($('city'), { horizon: 0.93, height: 0.2, flat: true }); gateCity.start(); }
+    (function lights() {
+      var cv = $('gate-lights'); if (!cv || reduce) return;
+      var pts; try { pts = JSON.parse(cv.getAttribute('data-pts')); } catch (e) { return; }
+      var ctx = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1), w, h;
+      var seeds = pts.map(function () { return { ph: Math.random() * 6.28, sp: 0.6 + Math.random() * 2.6, off: Math.random() < 0.18 }; });
+      function size() { var r = cv.getBoundingClientRect(); w = r.width; h = r.height; cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+      size(); window.addEventListener('resize', size);
+      var t0 = performance.now();
+      (function frame(now) {
+        if (gate.classList.contains('is-done')) return;
+        var t = (now - t0) / 1000; ctx.clearRect(0, 0, w, h);
+        for (var i = 0; i < pts.length; i++) {
+          var p = pts[i], s = seeds[i];
+          var v = 0.5 + 0.5 * Math.sin(t * s.sp + s.ph);
+          if (s.off) v = (Math.sin(t * s.sp * 0.7 + s.ph) > 0.55) ? 0 : v;
+          v = v * v;
+          var x = p[0] / 100 * w, y = p[1] / 100 * h, r = (1.4 + p[2] * 1.3) * (0.6 + v);
+          var g = ctx.createRadialGradient(x, y, 0, x, y, r * 3);
+          g.addColorStop(0, 'rgba(255,214,150,' + (0.85 * v) + ')'); g.addColorStop(0.35, 'rgba(255,150,60,' + (0.35 * v) + ')'); g.addColorStop(1, 'rgba(255,120,40,0)');
+          ctx.fillStyle = g; ctx.fillRect(x - r * 3, y - r * 3, r * 6, r * 6);
+        }
+        requestAnimationFrame(frame);
+      })(t0);
+    })();
     gate.addEventListener('click', closeGate);
     window.addEventListener('keydown', closeGate);
-    gateTimer = setTimeout(closeGate, reduce ? 900 : 3200);
+    gateTimer = setTimeout(closeGate, reduce ? 900 : 4600);
   } else { requestAnimationFrame(ready); }
 
   /* ── SCROLL: hangar push-in, altimeter, current space ── */

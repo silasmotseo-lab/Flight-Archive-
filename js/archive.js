@@ -47,7 +47,9 @@
         'CASE FILE 001 — ICARUS, THE 2ND FLIGHT — RESTRICTED', '', 'CONTENTS: FLIGHT LOGS · BLACK BOX · EVIDENCE · PILOT PROFILE', '',
         'NOTE: Subject declared deceased 2019. Status disputed.' ] },
       { name: '██████████████.pdf', locked: 'ACCESS DENIED' } ] },
-    { dir: 'CASE_FILE_002', sealed: 'ACCESS DENIED' },
+    { dir: 'CASE_FILE_002', sealed: 'ACCESS DENIED', unlock: { name: 'case_002_recovered.txt', meta: 'UNLOCKED · ALL EVIDENCE RECOVERED', body: [
+        'CASE FILE 002 — ACCESS GRANTED', '', 'All six pieces of evidence recovered.', 'You found everything the Bureau missed.', '',
+        'CONTENTS: SEALED UNTIL RELEASE.', '', 'Citizens, not followers.' ] } },
     { dir: 'CASE_FILE_003', sealed: 'FILE CORRUPTED' },
     { dir: 'CASE_FILE_004', sealed: 'REDACTED' }
   ];
@@ -77,6 +79,15 @@
       list.appendChild(b);
     });
     g.appendChild(list);
+    if (d.unlock) window.addEventListener('fa:unlock', function () {
+      d.sealed = null; g.classList.remove('dir--sealed'); var s2 = h.querySelector('.dir__seal'); if (s2) s2.remove();
+      d.files = [d.unlock]; flat.push(d.unlock);
+      var b2 = el('button', 'file file--live'); b2.type = 'button';
+      b2.appendChild(el('span', 'file__icon', '▤')); b2.appendChild(el('span', 'file__name', d.unlock.name));
+      b2.addEventListener('click', function () { open(d.unlock, b2); });
+      list.appendChild(b2); g.classList.add('is-open');
+      print('RES', d.dir + ': UNLOCKED');
+    });
     h.addEventListener('click', function () {
       if (d.sealed) { flash(h); print('ERR', d.dir + ': ' + d.sealed); return; }
       g.classList.toggle('is-open');
