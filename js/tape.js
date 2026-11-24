@@ -13,6 +13,12 @@
     } else v.pause();
   }
   box.addEventListener('click', toggle);
+  var watch = document.getElementById('watch-trailer');
+  if (watch) watch.addEventListener('click', function (e) {
+    e.preventDefault();
+    box.scrollIntoView({ behavior: 'instant', block: 'center' });
+    if (v.paused) toggle();
+  });
   v.addEventListener('play', function () { box.classList.add('on'); });
   v.addEventListener('pause', function () { box.classList.remove('on'); });
   v.addEventListener('ended', function () { box.classList.remove('on'); v.currentTime = 0; });

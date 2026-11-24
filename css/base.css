@@ -254,3 +254,19 @@ html.js.ready .title__a { letter-spacing: 0.32em; }
 .gate__text::before { content: ""; position: absolute; left: 0; right: 0; top: -22px; bottom: -22px; z-index: -1;
   background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.62) 30%, rgba(0,0,0,0.62) 70%, transparent); }
 .gate__place { color: #cfc7b8; }
+
+/* ── Who and what, before the lore (a stranger should know in 3 seconds) ── */
+.gate__who { font-family: var(--display); font-stretch: 125%; font-weight: 400; font-size: clamp(30px, 8vw, 46px); letter-spacing: .4em; margin-right: -.4em; color: var(--paper); line-height: 1; }
+.gate__what { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .24em; color: var(--amber); margin: 10px 0 14px; }
+.bar__sub { color: var(--ash); font-weight: 400; }
+.intro { margin-top: 22px; max-width: 30rem; font-size: 16px; line-height: 1.55; color: #e4ddcd; text-shadow: 0 1px 12px rgba(0,0,0,.85); }
+.intro b { font-weight: 500; color: var(--paper); }
+.hangar__action { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn--solid { background: var(--amber); color: #120c04; border-color: var(--amber); }
+.btn--solid span { color: inherit; }
+html.js.ready .hangar__copy > :nth-child(3) { transition-delay: 0.45s; }
+@media (max-width: 700px) {
+  .intro { font-size: 15px; margin-top: 16px; }
+  .hangar__copy .quote { display: none; }
+  .hangar__action .btn { flex: 1 1 auto; justify-content: center; text-align: center; padding-left: 12px; padding-right: 12px; }
+}
