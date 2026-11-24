@@ -184,18 +184,28 @@
         <p class="space__lede">Physical evidence, tagged and stamped. Tap a card to read it.</p>
       </header>
       <div class="table">
-        <article class="card" style="--r:-2.2deg">
+        <article class="card card--act" data-act="memo" style="--r:-2.2deg" tabindex="0" role="button" aria-expanded="false">
           <span class="stamp">RESTRICTED</span>
           <p class="card__eye">BLACK BOX RECOVERY #001</p>
           <h3 class="card__t">VOICE MEMO — 2019-04-12</h3>
-          <p class="card__m">FORMAT: .WAV · DURATION: 1:42<br>SIGNAL QUALITY: 31%<br>CONTENT: PILOT TRANSMISSION</p>
+          <p class="card__m">FORMAT: .WAV · DURATION: 1:42<br>SIGNAL QUALITY: 31%<br>CONTENT: PILOT TRANSMISSION<br><b class="card__cue">▶ TAP TO PLAY</b></p>
+          <div class="fx fx--memo" aria-hidden="true">
+            <svg viewBox="0 0 240 48" preserveAspectRatio="none"><polyline class="fx__wave" points=""/></svg>
+            <p class="fx__l">PLAYBACK · SIGNAL <b data-to="31">0</b>%</p>
+            <p class="fx__l fx__warn">TRANSMISSION INCOMPLETE</p>
+          </div>
           <span class="tag">FA-001-01</span>
         </article>
-        <article class="card" style="--r:1.6deg">
+        <article class="card card--act" data-act="log" style="--r:1.6deg" tabindex="0" role="button" aria-expanded="false">
           <span class="stamp stamp--ok">OPEN</span>
           <p class="card__eye">FLIGHT LOG #024</p>
           <h3 class="card__t">ALTITUDE LOG — 2021-11-03</h3>
-          <p class="card__m">ALTITUDE: 622m · VELOCITY: 83m/s<br>HEAT LEVELS: RISING<br>PILOT: NON-COMPLIANT · WARNING IGNORED</p>
+          <p class="card__m">ALTITUDE: 622m · VELOCITY: 83m/s<br>HEAT LEVELS: RISING<br>PILOT: NON-COMPLIANT · WARNING IGNORED<br><b class="card__cue">▶ TAP TO REPLAY</b></p>
+          <div class="fx fx--log" aria-hidden="true">
+            <p class="fx__l">ALT <b data-to="622">0</b>m · VEL <b data-to="83">0</b>m/s</p>
+            <p class="fx__l">HEAT</p><span class="fx__heat"><i></i></span>
+            <p class="fx__l fx__warn fx__blink">⚠ WARNING IGNORED</p>
+          </div>
           <span class="tag">FA-001-02</span>
         </article>
         <article class="card card--note" style="--r:-0.8deg" tabindex="0" role="button" aria-expanded="false" id="note-card">
@@ -212,13 +222,23 @@
           </div>
           <span class="tag">FA-001-03</span>
         </article>
-        <article class="card" style="--r:2.4deg">
+        <article class="card card--act card--bp" data-act="uv" style="--r:2.4deg" tabindex="0" role="button" aria-expanded="false">
           <span class="stamp">REDACTED</span>
           <p class="card__eye">WING STRUCTURE — MODEL I</p>
           <h3 class="card__t">TECHNICAL BLUEPRINT</h3>
-          <p class="card__m">TITANIUM FRAME · CERAMIC FEATHERS<br>SOLAR RESISTANT COATING<br>NOTES: <span class="rx">██████████████</span></p>
+          <p class="card__m">TITANIUM FRAME · CERAMIC FEATHERS<br>SOLAR RESISTANT COATING<br>NOTES: <span class="rx">██████████████</span><br><b class="card__cue">▶ TAP FOR UV SCAN</b></p>
+          <div class="fx fx--uv" aria-hidden="true">
+            <svg viewBox="0 0 260 120" fill="none">
+              <path class="fx__ln" d="M10 70 C60 60 110 40 150 22 L250 10"/>
+              <path class="fx__ln" d="M10 70 C70 74 120 80 160 92 L240 104"/>
+              <path class="fx__ln" d="M60 60 L70 96 M90 50 L104 88 M120 38 L138 86 M150 24 L170 92 M180 18 L200 96 M210 14 L226 100"/>
+              <path class="fx__ln fx__dim" d="M10 70 L250 10 M10 70 L240 104 M20 112 L250 112 M20 108 V116 M250 108 V116"/>
+            </svg>
+            <p class="fx__l">UV SCAN · MODEL I · NOTES REMAIN REDACTED</p>
+          </div>
           <span class="tag">FA-001-04</span>
         </article>
+        <div class="torch" aria-hidden="true"></div>
       </div>
     </section>
 
@@ -374,6 +394,7 @@
   <script src="/js/archive.js" defer></script>
   <script src="/js/console.js" defer></script>
   <script src="/js/tape.js" defer></script>
+  <script src="/js/locker.js" defer></script>
   <script src="/js/main.js" defer></script>
   <script src="/js/motion.js" defer></script>
   <script src="/js/pickups.js" defer></script>
