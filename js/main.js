@@ -16,7 +16,7 @@
     window.removeEventListener('keydown', closeGate);
   }
   if (root.classList.contains('gate-on') && gate) {
-    if (window.FASkyline) { gateCity = window.FASkyline.create($('city')); gateCity.start(); }
+    if (window.FASkyline) { gateCity = window.FASkyline.create($('city'), { horizon: 0.995, height: 0.16, flat: true }); gateCity.start(); }
     gate.addEventListener('click', closeGate);
     window.addEventListener('keydown', closeGate);
     gateTimer = setTimeout(closeGate, reduce ? 900 : 3200);
@@ -84,7 +84,7 @@
     var hEnd = hangar.offsetHeight, cTop = cockpit.offsetTop + cockpit.offsetHeight * 0.6;
     var a = Math.min(1, Math.max(0, (y - hEnd * 0.8) / Math.max(1, cTop - hEnd * 0.8)));
     root.style.setProperty('--j', Math.min(1, a + sunBoost * 0.15).toFixed(4));
-    burn = Math.min(1, Math.max(0, (a - 0.3) / 0.7) + sunBoost * 0.2);
+    burn = Math.min(1, Math.max(0, (a - 0.12) / 0.6) + sunBoost * 0.2);
     root.style.setProperty('--b', burn.toFixed(4));
     if (heatMap) heatMap.setAttribute('scale', (burn * 7).toFixed(2));
     ftEl.textContent = altitude.toLocaleString('en-US');
@@ -204,32 +204,10 @@
   });
   try { var saved = localStorage.getItem('fa-citizen'); if (saved) $('mc-name').value = saved; } catch (err) {}
 
-  /* ── EMBERS: rise from the bottom; more of them the hotter it gets ── */
-  (function embers() {
-    var c = $('embers'); if (!c || reduce) return;
-    var x = c.getContext('2d'), P = [], W, H, dpr, t = 0;
-    function size() { dpr = Math.min(window.devicePixelRatio || 1, 2); W = c.clientWidth; H = c.clientHeight; c.width = W * dpr; c.height = H * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0); }
-    size(); window.addEventListener('resize', size);
-    function spawn() { return { x: Math.random() * W, y: H + 10, vy: 0.6 + Math.random() * 1.8, vx: (Math.random() - 0.5) * 0.6, r: 0.6 + Math.random() * 2.2, life: 1, fade: 0.003 + Math.random() * 0.006, ph: Math.random() * 6.28 }; }
-    function frame() {
-      t += 0.016;
-      x.clearRect(0, 0, W, H);
-      if (burn > 0.02) {
-        var want = Math.round(burn * burn * 140);
-        while (P.length < want) P.push(spawn());
-        if (heatNoise) heatNoise.setAttribute('baseFrequency', (0.012 + Math.sin(t * 1.3) * 0.003).toFixed(4) + ' ' + (0.09 + Math.sin(t * 2.1) * 0.02).toFixed(4));
-      }
-      for (var i = P.length - 1; i >= 0; i--) {
-        var p = P[i];
-        p.y -= p.vy * (1 + burn); p.x += p.vx + Math.sin(t * 2 + p.ph) * 0.4; p.life -= p.fade;
-        if (p.life <= 0 || p.y < -10) { if (P.length > Math.round(burn * burn * 140)) { P.splice(i, 1); continue; } P[i] = spawn(); continue; }
-        var a = p.life * (0.5 + 0.5 * Math.sin(t * 8 + p.ph));
-        x.fillStyle = 'rgba(255,' + (140 + Math.round(80 * p.life)) + ',60,' + a.toFixed(3) + ')';
-        x.beginPath(); x.arc(p.x, p.y, p.r, 0, 6.283); x.fill();
-      }
-      requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
+  /* heat shimmer on headings */
+  (function shimmer() {
+    if (reduce || !heatNoise) return; var t = 0;
+    (function f() { t += 0.016; if (burn > 0.02) heatNoise.setAttribute('baseFrequency', (0.012 + Math.sin(t * 1.3) * 0.003).toFixed(4) + ' ' + (0.09 + Math.sin(t * 2.1) * 0.02).toFixed(4)); requestAnimationFrame(f); })();
   })();
 
   update();

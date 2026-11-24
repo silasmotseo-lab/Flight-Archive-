@@ -40,7 +40,7 @@
     function profile(u) {
       var r = { h: 0, lm: false, tip: false, blk: null };
       for (var i = 0; i < city.blocks.length; i++) { var b = city.blocks[i]; if (u >= b.u0 && u < b.u1) { r.h = b.h; r.blk = b; break; } }
-      for (var j = 0; j < landmarks.length; j++) { var L = landmarks[j]; if (u >= L.u0 && u < L.u1 && L.h > r.h) { r.h = L.h; r.lm = true; r.tip = !!L.tip; } }
+      if (!opts.flat) for (var j = 0; j < landmarks.length; j++) { var L = landmarks[j]; if (u >= L.u0 && u < L.u1 && L.h > r.h) { r.h = L.h; r.lm = true; r.tip = !!L.tip; } }
       return r;
     }
 
@@ -61,7 +61,7 @@
           f1: blk.f1, f2: blk.f2, ph: blk.ph, delay: uu * 0.9 + rnd() * 0.12,
           win: p.h > 0.12 && rnd() < 0.5 ? 0.15 + rnd() * 0.7 : -1, winPh: rnd() * 6.28 });
       }
-      landmarks.forEach(function (L) {
+      if (!opts.flat) landmarks.forEach(function (L) {
         if ((L.u1 - L.u0) * W >= 8) return;
         var mid = (L.u0 + L.u1) / 2, best = null, d = 1e9;
         bars.forEach(function (b) { var bu = (b.x + b.w / 2) / W; if (Math.abs(bu - mid) < d) { d = Math.abs(bu - mid); best = b; } });
@@ -100,7 +100,7 @@
         }
       }
       var podRise = reduce ? 1 : ease((t - 0.75) / 0.7);
-      if (podRise > 0) pods.forEach(function (P) {
+      if (podRise > 0 && !opts.flat) pods.forEach(function (P) {
         var x0 = P.u0 * W, x1 = P.u1 * W, y0 = horizon - P.hi * maxH * podRise, y1 = horizon - P.lo * maxH * podRise;
         ctx.globalAlpha = podRise;
         ctx.fillStyle = 'rgba(232,180,110,0.92)'; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);

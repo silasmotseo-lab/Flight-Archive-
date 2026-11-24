@@ -12,6 +12,7 @@
   <meta property="og:image" content="/assets/env/share_1200x630.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230A0B0A'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23E3A048' stroke-width='2'/%3E%3Crect x='15' y='10' width='2' height='12' fill='%23E3A048'/%3E%3C/svg%3E">
+  <link rel="preload" as="image" type="image/avif" imagesrcset="/assets/env/jozi_720.avif 720w, /assets/env/jozi_1080.avif 1080w, /assets/env/jozi_1536.avif 1536w" imagesizes="100vw">
   <link rel="preload" as="image" type="image/avif"
         imagesrcset="/assets/env/hangar_768.avif 768w, /assets/env/hangar_1280.avif 1280w, /assets/env/hangar_1920.avif 1920w, /assets/env/hangar_2752.avif 2752w"
         imagesizes="(orientation: portrait) 180vh, 100vw">
@@ -32,6 +33,11 @@
 
   <!-- 0 · THE GATE -->
   <div class="gate" id="gate" aria-hidden="true">
+    <picture class="gate__photo">
+      <source type="image/avif" srcset="/assets/env/jozi_720.avif 720w, /assets/env/jozi_1080.avif 1080w, /assets/env/jozi_1536.avif 1536w" sizes="100vw">
+      <source type="image/webp" srcset="/assets/env/jozi_720.webp 720w, /assets/env/jozi_1080.webp 1080w, /assets/env/jozi_1536.webp 1536w" sizes="100vw">
+      <img src="/assets/env/jozi_1080.jpg" alt="" width="1536" height="2752" fetchpriority="high">
+    </picture>
     <canvas class="gate__city" id="city"></canvas>
     <div class="gate__text">
       <p class="gate__place">JOHANNESBURG · −26.2041 · 28.0473</p>
@@ -74,7 +80,6 @@
       <feDisplacementMap id="heat-map" in="SourceGraphic" scale="0" xChannelSelector="R" yChannelSelector="G"/>
     </filter>
   </svg>
-  <canvas class="embers" id="embers" aria-hidden="true"></canvas>
 
   <main>
     <!-- 1 · THE HANGAR -->
