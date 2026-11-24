@@ -550,3 +550,35 @@ html.js .ev--clip.reveal.in .clip { opacity: 1; transform: none; }
 @media (max-width: 700px) { .ev--live.in .ev__b { animation: none; white-space: normal; } }
 @keyframes liveType { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
 @media (prefers-reduced-motion: reduce) { .craft { display: none; } .ev--lost.in .ev__t, .ev--lost.in::after { animation: none; } }
+
+/* ── PERSONNEL FILE, assembled ────────────────────────
+   Cover flips, the photo drops onto the page and the paperclip snaps shut;
+   each field types in as you reach it, the verdict gets stamped, the note writes itself. */
+html.js .folder__photo { opacity: 0; transform: translateY(-46px) rotate(-9deg) scale(1.05); transition: opacity .3s ease 1.1s, transform .7s cubic-bezier(.3,1.5,.5,1) 1.1s; }
+html.js .folder.open .folder__photo { opacity: 1; transform: none; }
+html.js .clipper { transform-origin: 50% 100%; transform: rotateX(80deg) translateY(-14px); opacity: 0; transition: transform .18s cubic-bezier(.2,1.8,.4,1) 1.9s, opacity .05s linear 1.9s; }
+html.js .folder.open .clipper { transform: none; opacity: 1; }
+html.js .folder__photo figcaption { opacity: 0; transition: opacity .1s 2.3s; }
+html.js .folder.open .folder__photo figcaption { opacity: 1; animation: thud .32s cubic-bezier(.2,.9,.3,1.3) 2.3s both; }
+/* fields */
+html.js .dossier dt { opacity: 0; transition: opacity .3s; }
+html.js .dossier dd { clip-path: inset(0 100% 0 0); transition: clip-path .55s steps(18) .15s; }
+html.js .dossier div.in dt { opacity: 1; }
+html.js .dossier div.in dd { clip-path: inset(0 0 0 0); }
+.dossier .green::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #2c9a4a; margin-right: 8px; vertical-align: 2px; }
+.dossier div.in .green::before { animation: pulse 1.6s ease infinite; }
+/* verdict gets stamped */
+.dossier .red { display: inline-block; border: 2px solid currentColor; padding: 2px 8px; rotate: -3deg; font-family: var(--mono); font-size: 15px; letter-spacing: .14em; }
+html.js .dossier .red { clip-path: none; opacity: 0; transition: none; }
+html.js .dossier div.in .red { animation: thud .32s cubic-bezier(.2,.9,.3,1.3) .5s both; }
+/* the note writes itself, pen first */
+html.js .dossier .hand { position: relative; clip-path: inset(0 100% 0 0); transition: clip-path 2.6s cubic-bezier(.45,.1,.55,.95) .3s; }
+html.js .dossier div.in .hand { clip-path: inset(-6px -20px -6px 0); }
+.dossier .wide { position: relative; }
+.dossier .pen { position: absolute; left: 0; bottom: 18px; width: 4px; height: 4px; border-radius: 50%; background: #1f3a7a; box-shadow: 0 0 0 2px rgba(31,58,122,.15); opacity: 0; }
+.dossier div.in .pen { animation: penGo 2.6s cubic-bezier(.45,.1,.55,.95) .3s both; }
+@keyframes penGo { 0% { opacity: 1; left: 0; transform: translateY(0); } 25% { transform: translateY(-3px); } 50% { transform: translateY(2px); } 75% { transform: translateY(-2px); } 99% { opacity: 1; } 100% { opacity: 0; left: 96%; } }
+@media (prefers-reduced-motion: reduce) {
+  html.js .folder__photo, html.js .clipper, html.js .dossier dt, html.js .dossier .red, html.js .folder__photo figcaption { opacity: 1; transform: none; animation: none; }
+  html.js .dossier dd, html.js .dossier .hand { clip-path: none; }
+}
