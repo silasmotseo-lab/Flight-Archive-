@@ -68,6 +68,14 @@
     <div class="ascent__heat"></div>
   </div>
 
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <filter id="heat" x="-5%" y="-30%" width="110%" height="160%">
+      <feTurbulence id="heat-noise" type="fractalNoise" baseFrequency="0.012 0.09" numOctaves="2" seed="4"/>
+      <feDisplacementMap id="heat-map" in="SourceGraphic" scale="0" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
+  <canvas class="embers" id="embers" aria-hidden="true"></canvas>
+
   <main>
     <!-- 1 · THE HANGAR -->
     <section class="hangar space" id="hangar" data-space="HANGAR 2" aria-label="The Recovery Hangar">

@@ -269,3 +269,30 @@ main, .foot { position: relative; z-index: 1; }
 .alt__sunmark { position: absolute; left: 44px; top: 14px; width: 12px; height: 12px; border-radius: 50%;
   background: #FF7A2A; box-shadow: 0 0 calc(4px + 16px * var(--j, 0)) #FF7A2A; opacity: calc(0.35 + var(--j, 0) * 0.65); }
 @media (prefers-reduced-motion: reduce) { .ascent__corona { animation: none; } }
+
+/* ── THE BURN ─────────────────────────────────────────
+   --b: 0 → 1 as you near the sun. Text heats from paper to ember,
+   glows, shimmers with heat, and paper starts to scorch. */
+.ascent__sun { opacity: calc(0.35 + var(--j) * 1.2); mix-blend-mode: screen; }
+.ascent__disc { background: radial-gradient(closest-side, #FFFFFF 0%, #FFF1D6 18%, #FFC070 40%, #FF8A2A 62%, #FF5A1F 80%, rgba(255,90,31,0) 100%);
+  box-shadow: 0 0 calc(40px + 220px * var(--j)) rgba(255,120,40,0.85), 0 0 calc(80px + 400px * var(--j)) rgba(255,70,20,0.5); }
+.ascent__corona { background: radial-gradient(closest-side, rgba(255,150,60,0.7), rgba(255,90,31,0.28) 45%, transparent 75%); }
+.ascent__heat { opacity: calc(var(--s) * 0.9); }
+
+.space__title, .ev__t, .space__lede, .space .label, .ev__date, .ev__b, .recorder__t, .next__title {
+  color: color-mix(in srgb, var(--paper) calc(100% - var(--b, 0) * 75%), #FF8A2A);
+  text-shadow:
+    0 0 calc(var(--b, 0) * 6px) rgba(255, 190, 110, calc(var(--b, 0) * 0.9)),
+    0 0 calc(var(--b, 0) * 22px) rgba(255, 100, 30, calc(var(--b, 0) * 0.8)),
+    0 0 calc(var(--b, 0) * 48px) rgba(255, 60, 10, calc(var(--b, 0) * 0.6));
+}
+.space .label, .ev__date { color: color-mix(in srgb, var(--amber) calc(100% - var(--b, 0) * 60%), #FFD9A0); }
+.space__title, .ev__t { filter: url(#heat); }
+/* paper scorches from the edges in */
+.card, .clip, .photo, .dossier, .folder__photo {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.5),
+    inset 0 0 calc(var(--b, 0) * 34px) rgba(70, 25, 0, calc(var(--b, 0) * 0.85)),
+    inset 0 0 calc(var(--b, 0) * 8px) rgba(255, 110, 30, calc(var(--b, 0) * 0.7));
+}
+.embers { position: fixed; inset: 0; z-index: 2; pointer-events: none; mix-blend-mode: screen; }
+@media (prefers-reduced-motion: reduce) { .space__title, .ev__t { filter: none; } .embers { display: none; } }
