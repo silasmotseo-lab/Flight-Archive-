@@ -103,7 +103,10 @@
 
     var max = document.documentElement.scrollHeight - vh;
     var j = Math.min(1, Math.max(0, max > 0 ? y / max : 0));
-    var altitude = Math.round(Math.pow(j, 1.35) * 32500 / 10) * 10;
+    // altitude tops out at 32,500 ft exactly as the cockpit climb ends
+    var cEnd = cockpit.offsetTop + cockpit.offsetHeight - vh;
+    var jA = Math.min(1, Math.max(0, cEnd > 0 ? y / cEnd : j));
+    var altitude = Math.round(Math.pow(jA, 1.35) * 32500 / 10) * 10;
     // the ascent: start once you leave the hangar, peak at the cockpit
     var hEnd = hangar.offsetHeight, cTop = cockpit.offsetTop + cockpit.offsetHeight * 0.6;
     var a = Math.min(1, Math.max(0, (y - hEnd * 0.8) / Math.max(1, cTop - hEnd * 0.8)));
@@ -170,7 +173,9 @@
   /* ── COCKPIT: sun rises with scroll and with the black box ── */
   function cockpitSun() {
     var r = cockpit.getBoundingClientRect(), vh = window.innerHeight;
-    var s = Math.min(1, Math.max(0, (vh - r.top) / (r.height + vh * 0.2)));
+    var s = document.documentElement.classList.contains('scrub')
+      ? Math.min(1, Math.max(0, (vh - r.top) / r.height * 1.25))
+      : Math.min(1, Math.max(0, (vh - r.top) / (r.height + vh * 0.2)));
     cockpit.style.setProperty('--sun', Math.min(1, s * 0.75 + sunBoost * 0.5).toFixed(3));
   }
   (function blackbox() {

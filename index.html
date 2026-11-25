@@ -339,11 +339,63 @@
 
     <!-- 6 · THE COCKPIT / BLACK BOX -->
     <section class="space cockpit" id="cockpit" data-space="COCKPIT" aria-label="The cockpit">
+      <div class="cockpit__pin">
       <header class="space__head">
         <p class="label">// 06 · THE COCKPIT</p>
         <h2 class="space__title">BLACK BOX</h2>
-        <p class="space__lede">Recovered audio fragment. Unreleased. Press play and watch the sun.</p>
+        <p class="space__lede">Final climb. The flight recorder is still searching for the signal.</p>
       </header>
+
+      <div class="panel" aria-hidden="true">
+        <figure class="gauge">
+          <svg viewBox="0 0 120 120">
+            <circle class="g__bezel" cx="60" cy="60" r="57"/><circle class="g__face" cx="60" cy="60" r="50"/>
+            <g class="g__ticks" id="ck-ticks"></g>
+            <text class="g__lab" x="60" y="40">ALT</text>
+            <text class="g__lab g__sm" x="60" y="86">× 1000 FT</text>
+            <line class="g__needle g__needle--short" id="ck-n2" x1="60" y1="60" x2="60" y2="34"/>
+            <line class="g__needle" id="ck-n1" x1="60" y1="66" x2="60" y2="16"/>
+            <circle class="g__hub" cx="60" cy="60" r="4"/>
+          </svg>
+          <figcaption><b id="ck-alt">28,000</b> FT</figcaption>
+        </figure>
+        <figure class="gauge">
+          <svg viewBox="0 0 120 120">
+            <defs><clipPath id="hz-clip"><circle cx="60" cy="60" r="50"/></clipPath></defs>
+            <circle class="g__bezel" cx="60" cy="60" r="57"/>
+            <g clip-path="url(#hz-clip)">
+              <g id="hz-ball">
+                <rect x="-40" y="-60" width="200" height="120" fill="#7a3a16"/>
+                <rect x="-40" y="60" width="200" height="120" fill="#1d140c"/>
+                <line x1="-40" y1="60" x2="160" y2="60" stroke="#f3d8a8" stroke-width="1.4"/>
+                <g class="hz__pitch"><line x1="48" y1="48" x2="72" y2="48"/><line x1="52" y1="36" x2="68" y2="36"/><line x1="48" y1="72" x2="72" y2="72"/><line x1="52" y1="84" x2="68" y2="84"/></g>
+              </g>
+            </g>
+            <path class="hz__plane" d="M30 60 H50 L55 66 L60 60 L65 66 L70 60 H90"/>
+            <circle class="hz__dot" cx="60" cy="60" r="2"/>
+          </svg>
+          <figcaption>PITCH <b id="hz-read">+04°</b></figcaption>
+        </figure>
+        <figure class="gauge">
+          <svg viewBox="0 0 120 120">
+            <circle class="g__bezel" cx="60" cy="60" r="57"/><circle class="g__face" cx="60" cy="60" r="50"/>
+            <path class="heat__track" d="M24 84 A42 42 0 1 1 96 84"/>
+            <path class="heat__fill" id="heat-fill" d="M24 84 A42 42 0 1 1 96 84" pathLength="100"/>
+            <path class="heat__red" d="M24 84 A42 42 0 1 1 96 84" pathLength="100"/>
+            <text class="g__lab" x="60" y="56">HEAT</text>
+            <line class="g__needle" id="heat-n" x1="60" y1="60" x2="60" y2="22"/>
+            <circle class="g__hub" cx="60" cy="60" r="4"/>
+          </svg>
+          <figcaption><b id="heat-read">412</b> °C</figcaption>
+        </figure>
+        <div class="lights">
+          <span class="lt" data-on="0.32">ALT HOLD</span>
+          <span class="lt lt--amb" data-on="0.5">HEAT</span>
+          <span class="lt lt--red" data-on="0.72">MASTER CAUTION</span>
+          <span class="lt lt--red lt--blink" data-on="0">SIGNAL LOST</span>
+        </div>
+      </div>
+
       <div class="recorder" id="bb">
         <div class="recorder__band"><span>FLIGHT RECORDER</span><span>DO NOT OPEN</span></div>
         <div class="recorder__face">
@@ -353,9 +405,10 @@
             <button class="recorder__play" id="bb-play" type="button" aria-label="Play recovered audio">▶</button>
             <div class="recorder__wave" id="bb-wave" aria-hidden="true"></div>
           </div>
-          <div class="recorder__meta"><span id="bb-st">SIGNAL: STANDBY</span><span id="bb-tm">00:00 / 00:00</span></div>
+          <div class="recorder__meta"><span id="bb-st">SIGNAL: SEARCHING</span><span id="bb-tm">00:00 / 00:00</span></div>
         </div>
         <audio id="bb-au" preload="metadata" src="/assets/audio/blackbox-001.mp3"></audio>
+      </div>
       </div>
     </section>
 
@@ -414,6 +467,7 @@
   <script src="/js/locker.js" defer></script>
   <script src="/js/path.js" defer></script>
   <script src="/js/personnel.js" defer></script>
+  <script src="/js/cockpit.js" defer></script>
   <script src="/js/main.js" defer></script>
   <script src="/js/motion.js" defer></script>
   <script src="/js/pickups.js" defer></script>

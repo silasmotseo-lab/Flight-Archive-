@@ -6,7 +6,7 @@
     { k: 'recorder',  name: 'FLIGHT RECORDER',  space: 'locker',    x: 80, y: 1 },
     { k: 'blueprint', name: 'WING BLUEPRINT',   space: 'path',      x: 82, y: 42 },
     { k: 'memcard',   name: 'MEMORY CARD',      space: 'personnel', x: 84, y: 14 },
-    { k: 'sun',       name: 'SUN DISC',         space: 'cockpit',   x: 80, y: 68 }
+    { k: 'sun',       name: 'SUN DISC',         space: 'cockpit',   x: 84, y: 2 }
   ];
   var KEY = 'fa-evidence';
   var got = {};

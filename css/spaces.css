@@ -652,3 +652,50 @@ html.scrub .console__pin::after { content: ""; position: absolute; inset: 0; z-i
 html.scrub .console:not(.go) .console__stage { transform: scale(calc(1.06 + var(--dv, 0) * 6.6)); }
 html.scrub .console__ui, html.scrub .console__tag { opacity: calc(1 - var(--dv, 0) * 4); }
 html.scrub .console__glow { opacity: calc(.8 + var(--dv, 0) * .6); }
+
+/* ── COCKPIT: final climb, pinned and flown by scroll ── */
+.panel { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 760px; margin: 0 0 18px;
+  padding: 16px; background: linear-gradient(180deg, #1b1c1a, #0f100e); border-radius: 12px; border: 1px solid rgba(233,227,210,.08);
+  box-shadow: 0 30px 70px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.06), inset 0 -20px 40px rgba(0,0,0,.4); }
+.gauge { margin: 0; text-align: center; }
+.gauge svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,.6)); }
+.gauge figcaption { margin-top: 6px; font: 500 10px/1.2 var(--mono); letter-spacing: .14em; color: var(--ash); }
+.gauge figcaption b { color: var(--paper); font-weight: 500; font-variant-numeric: tabular-nums; }
+.g__bezel { fill: #262724; stroke: #3a3b37; stroke-width: 1.5; }
+.g__face { fill: #0b0c0b; stroke: rgba(0,0,0,.8); stroke-width: 2; }
+.g__ticks line { stroke: #d8d0bf; stroke-width: 1.4; } .g__ticks line.mn { stroke-width: .7; opacity: .55; }
+.g__ticks text { fill: #d8d0bf; font: 500 8px var(--mono); text-anchor: middle; dominant-baseline: central; }
+.g__lab { fill: var(--amber); font: 500 7px var(--mono); letter-spacing: .14em; text-anchor: middle; }
+.g__sm { font-size: 5px; fill: var(--ash); }
+.g__needle { stroke: #f4ede0; stroke-width: 2.2; stroke-linecap: round; transform-origin: 60px 60px; filter: drop-shadow(0 0 2px rgba(0,0,0,.8)); }
+.g__needle--short { stroke-width: 3.2; stroke: #c9c0ae; }
+.g__hub { fill: #2c2d2a; stroke: #6b6a63; }
+.hz__pitch line { stroke: rgba(243,216,168,.7); stroke-width: .8; }
+.hz__plane { fill: none; stroke: var(--amber); stroke-width: 2.4; stroke-linejoin: round; filter: drop-shadow(0 0 3px rgba(227,160,72,.6)); }
+.hz__dot { fill: var(--amber); }
+#hz-ball { transform-origin: 60px 60px; }
+.heat__track { fill: none; stroke: rgba(233,227,210,.1); stroke-width: 6; }
+.heat__fill { fill: none; stroke: #d08a2a; stroke-width: 6; stroke-dasharray: 100; stroke-dashoffset: calc(100 - var(--cq, 0) * 96); }
+.heat__red { fill: none; stroke: #c8352b; stroke-width: 6; stroke-dasharray: 22 100; stroke-dashoffset: -78; opacity: clamp(.25, (var(--cq, 0) - .7) * 5, 1); }
+#heat-n { transform: rotate(calc(-130deg + var(--cq, 0) * 252deg)); }
+.lights { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.lt { padding: 8px 4px; text-align: center; font: 500 9px/1.2 var(--mono); letter-spacing: .12em; color: rgba(233,227,210,.25);
+  background: #0c0d0c; border: 1px solid rgba(233,227,210,.08); border-radius: 4px; transition: color .15s, background .15s, box-shadow .15s; }
+.lt.on { color: #b8ffc8; background: rgba(60,180,90,.18); box-shadow: 0 0 14px rgba(80,220,120,.3), inset 0 0 8px rgba(80,220,120,.2); }
+.lt--amb.on { color: #ffd9a0; background: rgba(227,160,72,.22); box-shadow: 0 0 14px rgba(227,160,72,.4), inset 0 0 8px rgba(227,160,72,.25); }
+.lt--red.on { color: #ffc2b8; background: rgba(200,53,43,.3); box-shadow: 0 0 16px rgba(220,60,40,.5), inset 0 0 8px rgba(220,60,40,.3); }
+.lt--blink.on { animation: beacon .8s steps(1) infinite; }
+@media (max-width: 700px) {
+  .panel { gap: 8px; padding: 10px; margin-bottom: 12px; }
+  .gauge figcaption { font-size: 9px; letter-spacing: .08em; }
+  .lt { font-size: 8px; letter-spacing: .06em; padding: 7px 2px; }
+  .cockpit .space__head { margin-bottom: 14px; }
+  .cockpit .space__lede { font-size: 13px; }
+}
+/* pinned in scrub mode */
+html.scrub .cockpit { height: 230svh; min-height: 0; }
+html.scrub .cockpit__pin { position: sticky; top: 0; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding: 64px 0 24px; }
+@media (max-width: 700px) { html.scrub .cockpit__pin { padding-top: 56px; } html.scrub .cockpit .space__title { font-size: 26px; } }
+/* the black box searches with scroll when there is no audio yet */
+.recorder.searching .recorder__wave i { background: rgba(227,160,72,.35); transition: height .08s; }
+.recorder.searching .recorder__play { opacity: .3; }
