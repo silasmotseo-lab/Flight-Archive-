@@ -223,15 +223,44 @@
     $('id-save').href = c.toDataURL('image/png');
     return no;
   }
+  /* Google Form behind the registry. Fill these in from the form's pre-filled link;
+     while they're empty, sign-ups stay on the device and nothing is sent anywhere. */
+  var REG = {
+    form: '',              // e.g. https://docs.google.com/forms/d/e/XXXX/formResponse
+    name: '', email: '', interest: '',          // entry.123456789 ids
+    music: 'The music', world: 'A world like this for my project'   // checkbox labels, exactly as in the form
+  };
+  function sendToRegistry(name, email, music, world) {
+    if (!REG.form || !REG.name || !REG.email) return Promise.resolve(false);
+    var body = new URLSearchParams();
+    body.append(REG.name, name); body.append(REG.email, email);
+    if (REG.interest) { if (music) body.append(REG.interest, REG.music); if (world) body.append(REG.interest, REG.world); }
+    // Google Forms doesn't send CORS headers; no-cors posts still land in the sheet
+    return fetch(REG.form, { method: 'POST', mode: 'no-cors', body: body }).then(function () { return true; }, function () { return false; });
+  }
   $('mc-form').addEventListener('submit', function (e) {
     e.preventDefault();
-    var name = $('mc-name').value.trim(); if (!name) return;
-    var no = drawId(name);
-    $('idcard').hidden = false; $('mc-form').hidden = true;
-    $('mc-free').textContent = 'SAVED · ' + no + ' · 7936KB FREE';
-    try { localStorage.setItem('fa-citizen', name); } catch (err) {}
+    var name = $('mc-name').value.trim(), email = $('mc-email').value.trim();
+    if (!name || !email) return;
+    var music = $('mc-music').checked, world = $('mc-world').checked;
+    var bar = $('mc-save'), btn = $('mc-form').querySelector('button[type=submit]');
+    btn.disabled = true; bar.hidden = false; void bar.offsetWidth; bar.classList.add('go');
+    try { navigator.vibrate && navigator.vibrate([10, 60, 10, 60, 10]); } catch (err) {}
+    var sent = sendToRegistry(name, email, music, world);
+    setTimeout(function () {
+      sent.then(function (ok) {
+        var no = drawId(name);
+        $('idcard').hidden = false; $('mc-form').hidden = true;
+        $('mc-free').textContent = 'SAVED · ' + no + ' · 7936KB FREE';
+        $('mc-note').textContent = ok
+          ? "You're on the list. Si will be in touch when the album lands."
+          : 'Your ID is saved on this device. The registry list opens soon.';
+        try { navigator.vibrate && navigator.vibrate(30); } catch (err) {}
+      });
+    }, 1900);
+    try { localStorage.setItem('fa-citizen', name); localStorage.setItem('fa-email', email); } catch (err) {}
   });
-  try { var saved = localStorage.getItem('fa-citizen'); if (saved) $('mc-name').value = saved; } catch (err) {}
+  try { var saved = localStorage.getItem('fa-citizen'); if (saved) $('mc-name').value = saved; var se = localStorage.getItem('fa-email'); if (se) $('mc-email').value = se; } catch (err) {}
 
   /* heat shimmer on headings */
   (function shimmer() {

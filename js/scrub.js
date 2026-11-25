@@ -17,7 +17,8 @@
     ['.dossier > div', 0.95, 0.55],
     ['.recorder', 1.0, 0.45],
     ['.memcard', 1.0, 0.45],
-    ['.tape', 1.0, 0.5]
+    ['.tape', 1.0, 0.5],
+    ['.builder', 1.0, 0.55]
   ];
   var items = [];
   MAP.forEach(function (m) {

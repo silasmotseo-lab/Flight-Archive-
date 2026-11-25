@@ -699,3 +699,26 @@ html.scrub .cockpit__pin { position: sticky; top: 0; min-height: 100svh; display
 /* the black box searches with scroll when there is no audio yet */
 .recorder.searching .recorder__wave i { background: rgba(227,160,72,.35); transition: height .08s; }
 .recorder.searching .recorder__play { opacity: .3; }
+
+/* ── REGISTRY: email, interests, save bar ── */
+.memcard__form input.lc { text-transform: none; }
+.memcard__form input.lc::placeholder { text-transform: uppercase; }
+.memcard__opts { border: 0; padding: 0; margin: 0; display: grid; gap: 10px; }
+.memcard__opts legend { font-size: 11px; letter-spacing: .2em; color: var(--ash); margin-bottom: 8px; }
+.chk { display: flex !important; grid-template-columns: none; align-items: center; gap: 12px; cursor: pointer; font-size: 12px !important; letter-spacing: .14em !important; color: var(--paper) !important; }
+.chk input { appearance: none; -webkit-appearance: none; flex: none; width: 20px; height: 20px; border: 1px solid rgba(227,160,72,.6); background: transparent; display: grid; place-items: center; margin: 0; padding: 0; cursor: pointer; }
+.chk input:checked { background: var(--amber); box-shadow: 0 0 10px rgba(227,160,72,.45); }
+.chk input:checked::after { content: ""; width: 9px; height: 5px; border-left: 2px solid #120c04; border-bottom: 2px solid #120c04; rotate: -45deg; translate: 0 -1px; }
+.savebar p { font: 500 11px/1 var(--mono); letter-spacing: .2em; color: var(--amber); margin-bottom: 10px; animation: beacon .9s steps(1) infinite; }
+.savebar span { display: block; height: 10px; border: 1px solid rgba(227,160,72,.5); padding: 2px; }
+.savebar i { display: block; height: 100%; width: 0; background: repeating-linear-gradient(90deg, var(--amber) 0 10px, transparent 10px 13px); transition: width 1.8s steps(18); }
+.savebar.go i { width: 100%; }
+.memcard__err { font: 500 11px/1.5 var(--mono); letter-spacing: .14em; color: var(--red); }
+
+/* ── THE BUILDER: quiet credit for people who want a world like this ── */
+.builder { position: relative; z-index: 2; padding: 14vh var(--pad, 20px) 12vh; background: #050605; }
+.builder > * { max-width: 900px; }
+.builder__t { margin-top: 14px; font-family: var(--display); font-stretch: 125%; font-weight: 300; font-size: clamp(26px, 5vw, 46px); letter-spacing: .06em; line-height: 1.15; color: var(--paper); }
+.builder__b { margin-top: 14px; color: #d6cfbf; font-size: 16px; }
+.builder__cta { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 12px; }
+html.scrub .builder { opacity: clamp(0, var(--sp, 0) * 2, 1); translate: 0 calc((1 - var(--sp, 0)) * 30px); }

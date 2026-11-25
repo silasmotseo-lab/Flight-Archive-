@@ -432,24 +432,40 @@
       <header class="space__head">
         <p class="label">// 07 · CITIZENS REGISTRY</p>
         <h2 class="space__title">CITIZENS, NOT FOLLOWERS.</h2>
-        <p class="space__lede">Register with the archive and receive your citizen ID.</p>
+        <p class="space__lede">Register with the archive. Get your citizen ID now, and word from Si when the album lands.</p>
       </header>
       <div class="memcard" id="memcard">
         <div class="memcard__hd"><span>MEMORY CARD (8MB) — SLOT 1</span><span>FLIGHT INVESTIGATION BUREAU</span></div>
         <div class="memcard__slot"><span class="memcard__icon" aria-hidden="true"></span><div><p>FLIGHT_ARCHIVE_DATA</p><p class="dim" id="mc-free">STATUS: EMPTY · <span data-count="8192">8192</span>KB FREE</p></div></div>
         <form class="memcard__form" id="mc-form" autocomplete="on">
           <label><span>CITIZEN NAME</span><input name="name" id="mc-name" required maxlength="28" placeholder="YOUR NAME" autocomplete="nickname"></label>
-          <button class="btn" type="submit"><span>[</span> SAVE TO MEMORY CARD <span>]</span></button>
+          <label><span>EMAIL · FOR RELEASE NEWS</span><input name="email" id="mc-email" type="email" required maxlength="80" placeholder="YOU@EMAIL.COM" autocomplete="email" class="lc"></label>
+          <fieldset class="memcard__opts"><legend>I'M HERE FOR</legend>
+            <label class="chk"><input type="checkbox" name="music" id="mc-music" checked><span>THE MUSIC</span></label>
+            <label class="chk"><input type="checkbox" name="world" id="mc-world"><span>A WORLD LIKE THIS FOR MY PROJECT</span></label>
+          </fieldset>
+          <button class="btn btn--solid" type="submit"><span>▶</span> SAVE TO MEMORY CARD</button>
+          <div class="savebar" id="mc-save" hidden><p>SAVING… DO NOT REMOVE MEMORY CARD</p><span><i></i></span></div>
         </form>
         <div class="idcard" id="idcard" hidden>
           <canvas id="id-canvas" width="1080" height="680" aria-label="Your citizen ID card"></canvas>
           <div class="idcard__actions">
             <a class="btn" id="id-save" download="flight-archive-citizen-id.png"><span>[</span> SAVE ID <span>]</span></a>
           </div>
-          <p class="dim small">Your ID is saved on this device only. The registry goes live with the release.</p>
+          <p class="dim small" id="mc-note">You're on the list. Si will be in touch when the album lands.</p>
         </div>
       </div>
       <canvas class="registry__city" id="city-end" aria-hidden="true"></canvas>
+    </section>
+    <!-- 8 · THE BUILDER -->
+    <section class="builder" id="builder" aria-label="Who built this">
+      <p class="label">// END OF FILE</p>
+      <h2 class="builder__t">This world was built by Si.</h2>
+      <p class="builder__b">Want one like it for your music, brand or project?</p>
+      <div class="builder__cta">
+        <a class="btn btn--solid" href="https://www.instagram.com/psyliss/" target="_blank" rel="noopener"><span>◎</span> INSTAGRAM · @PSYLISS</a>
+        <a class="btn" href="mailto:silasmotseo@gmail.com?subject=A%20world%20like%20Flight%20Archive"><span>[</span> EMAIL SI <span>]</span></a>
+      </div>
     </section>
   </main>
 
