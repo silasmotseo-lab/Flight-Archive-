@@ -582,3 +582,53 @@ html.js .dossier div.in .hand { clip-path: inset(-6px -20px -6px 0); }
   html.js .folder__photo, html.js .clipper, html.js .dossier dt, html.js .dossier .red, html.js .folder__photo figcaption { opacity: 1; transform: none; animation: none; }
   html.js .dossier dd, html.js .dossier .hand { clip-path: none; }
 }
+
+/* ══ SCROLL SCRUB ═════════════════════════════════════
+   html.scrub (set by scrub.js) replaces every timed reveal with one driven by --sp,
+   the element's scroll progress. No transitions: the scroll IS the timeline.
+   k(a,b) pattern: clamp(0, (var(--sp) - a) / (b - a), 1) = progress inside a window. */
+html.scrub .reveal, html.scrub .reveal.in { transition: none !important; }
+html.scrub .space__head.reveal { opacity: var(--sp, 0); translate: 0 calc((1 - var(--sp, 0)) * 28px); }
+html.scrub .crt.reveal, html.scrub .recorder.reveal, html.scrub .memcard.reveal, html.scrub .ev.reveal {
+  opacity: clamp(0, var(--sp, 0) * 2.2, 1); translate: 0 calc((1 - clamp(0, var(--sp, 0) * 1.6, 1)) * 34px); }
+
+/* evidence cards are dealt onto the table as you scroll, then stamped */
+html.scrub .card.reveal { --k: clamp(0, var(--sp, 0) / .7, 1);
+  opacity: clamp(0, var(--sp, 0) * 3, 1); translate: 0 calc((1 - var(--k)) * -90px); scale: calc(1.16 - var(--k) * .16);
+  rotate: calc(var(--r, 0deg) * (4 - var(--k) * 3)); }
+html.scrub .card.reveal .stamp { --s: clamp(0, (var(--sp, 0) - .72) / .14, 1); animation: none !important;
+  opacity: var(--s); scale: calc(2.1 - var(--s) * 1.1); }
+
+/* photos develop with scroll */
+html.scrub .ev.reveal .photo img, html.scrub .ev.reveal.in .photo img { transition: none !important; --d: clamp(0, (var(--sp, 0) - .15) / .7, 1);
+  filter: brightness(calc(2.8 - var(--d) * 1.8)) saturate(calc(var(--d) * .8)) contrast(calc(.55 + var(--d) * .5)) blur(calc((1 - var(--d)) * 3px)); }
+/* clippings fly in */
+html.scrub .ev--clip.reveal .clip, html.scrub .ev--clip.reveal.in .clip { transition: none !important; --c: clamp(0, var(--sp, 0) / .8, 1);
+  opacity: clamp(0, var(--sp, 0) * 2.5, 1);
+  transform: translateX(calc(var(--from, -60px) * (1 - var(--c)))) rotateX(calc((1 - var(--c)) * 35deg)) rotate(calc(var(--r, 0deg) * (1 + (1 - var(--c)) * 5))); }
+
+/* personnel file: cover opens, photo drops, paperclip snaps, stamp lands — all on scroll */
+html.scrub .folder.reveal { opacity: 1; translate: 0 0; }
+html.scrub .folder .folder__cover, html.scrub .folder.open .folder__cover { transition: none !important; pointer-events: none;
+  transform: rotateY(calc(clamp(0, (var(--sp, 0) - .05) / .4, 1) * -178deg)); }
+html.scrub .folder .folder__photo, html.scrub .folder.open .folder__photo { transition: none !important; --f: clamp(0, (var(--sp, 0) - .38) / .2, 1);
+  opacity: clamp(0, var(--f) * 3, 1); transform: translateY(calc((1 - var(--f)) * -46px)) rotate(calc((1 - var(--f)) * -9deg)) scale(calc(1.05 - var(--f) * .05)); }
+html.scrub .folder .clipper, html.scrub .folder.open .clipper { transition: none !important; --c: clamp(0, (var(--sp, 0) - .58) / .05, 1);
+  opacity: var(--c); transform: rotateX(calc((1 - var(--c)) * 80deg)) translateY(calc((1 - var(--c)) * -14px)); }
+html.scrub .folder .folder__photo figcaption, html.scrub .folder.open .folder__photo figcaption { transition: none !important; animation: none !important;
+  --s: clamp(0, (var(--sp, 0) - .64) / .08, 1); opacity: var(--s); scale: calc(2 - var(--s)); }
+
+/* dossier fields type in as you scroll past them */
+html.scrub .dossier > div dt, html.scrub .dossier > div.in dt { transition: none !important; opacity: clamp(0, var(--sp, 0) * 4, 1); }
+html.scrub .dossier > div dd, html.scrub .dossier > div.in dd { transition: none !important;
+  clip-path: inset(0 calc((1 - clamp(0, (var(--sp, 0) - .15) / .6, 1)) * 100%) 0 0); }
+html.scrub .dossier > div .red, html.scrub .dossier > div.in .red { animation: none !important; clip-path: none;
+  --s: clamp(0, (var(--sp, 0) - .45) / .15, 1); opacity: var(--s); scale: calc(2.2 - var(--s) * 1.2); }
+html.scrub .dossier > div .hand, html.scrub .dossier > div.in .hand { transition: none !important;
+  clip-path: inset(-6px calc((1 - clamp(0, (var(--sp, 0) - .1) / .85, 1)) * 100%) -6px 0); }
+html.scrub .dossier .pen, html.scrub .dossier div.in .pen { animation: none !important; --w: clamp(0, (var(--sp, 0) - .1) / .85, 1);
+  left: calc(var(--w) * 96%); opacity: clamp(0, var(--w) * 40, 1); }
+html.scrub .dossier .wide[style*="--sp: 1"] .pen { opacity: 0; }
+
+/* recovered tape slides up out of the dark */
+html.scrub .tape { opacity: clamp(0, var(--sp, 0) * 2, 1); transform: translateY(calc((1 - var(--sp, 0)) * 60px)) scale(calc(.94 + var(--sp, 0) * .06)); }
