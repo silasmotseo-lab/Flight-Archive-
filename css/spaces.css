@@ -632,3 +632,23 @@ html.scrub .dossier .wide[style*="--sp: 1"] .pen { opacity: 0; }
 
 /* recovered tape slides up out of the dark */
 html.scrub .tape { opacity: clamp(0, var(--sp, 0) * 2, 1); transform: translateY(calc((1 - var(--sp, 0)) * 60px)) scale(calc(.94 + var(--sp, 0) * .06)); }
+
+/* ── SCRUB, stage 2 ───────────────────────────────── */
+/* terminal: tube warms up with scroll, lines type with scroll */
+html.scrub .crt--scrub .crt__glass { animation: none !important;
+  transform: scale(calc(.5 + var(--pw, 0) * .5), calc(.006 + var(--pw, 0) * .994));
+  filter: brightness(calc(5 - var(--pw, 0) * 4)); }
+html.scrub .crt--scrub .crt__top p, html.scrub .crt--scrub .crt__h { visibility: visible; animation: none !important;
+  clip-path: inset(0 calc((1 - var(--lp, 0)) * 100%) 0 0); }
+html.scrub .crt--scrub .dir { transition: opacity .15s; }
+html.scrub .crt--scrub .dir:not(.shown) { opacity: 0; }
+html.scrub .crt--scrub:not(.crt--ready) .crt__cli { opacity: 0; }
+/* press start: the scene pins and scrolling pushes the camera into the CRT */
+html.scrub .console { height: 240svh; overflow: visible; }
+html.scrub .console__pin { position: sticky; top: 0; height: 100svh; min-height: 560px; overflow: hidden; isolation: isolate; }
+html.scrub .console::after { display: none; }
+html.scrub .console__pin::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(5,6,5,0.75), transparent 22%, transparent 62%, rgba(5,6,5,0.9) 92%); }
+html.scrub .console:not(.go) .console__stage { transform: scale(calc(1.06 + var(--dv, 0) * 6.6)); }
+html.scrub .console__ui, html.scrub .console__tag { opacity: calc(1 - var(--dv, 0) * 4); }
+html.scrub .console__glow { opacity: calc(.8 + var(--dv, 0) * .6); }

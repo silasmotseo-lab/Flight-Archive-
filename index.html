@@ -139,15 +139,17 @@
 
     <!-- 1.5 · PLAYER ONE: third person → first person -->
     <section class="console" id="console" aria-label="Press start">
-      <div class="console__stage">
-        <img class="console__img" src="/assets/env/console_1080.webp" srcset="/assets/env/console_720.webp 720w, /assets/env/console_1080.webp 1080w" sizes="100vw" alt="Si at a green CRT monitor in the hangar, controller in hand" loading="lazy">
-        <i class="console__glow" aria-hidden="true"></i>
-        <i class="console__scan" aria-hidden="true"></i>
-      </div>
-      <p class="console__tag label">// SAVE DATA FOUND · CASE FILE 001</p>
-      <div class="console__ui">
-        <button class="console__start" id="press-start" type="button"><b>▶</b> PRESS START</button>
-        <p class="console__hint">TAP · ENTER · OR A CONTROLLER</p>
+      <div class="console__pin">
+        <div class="console__stage">
+          <img class="console__img" src="/assets/env/console_1080.webp" srcset="/assets/env/console_720.webp 720w, /assets/env/console_1080.webp 1080w" sizes="100vw" alt="Si at a green CRT monitor in the hangar, controller in hand" loading="lazy">
+          <i class="console__glow" aria-hidden="true"></i>
+          <i class="console__scan" aria-hidden="true"></i>
+        </div>
+        <p class="console__tag label">// SAVE DATA FOUND · CASE FILE 001</p>
+        <div class="console__ui">
+          <button class="console__start" id="press-start" type="button"><b>▶</b> PRESS START</button>
+          <p class="console__hint">SCROLL TO DIVE IN · OR PRESS START</p>
+        </div>
       </div>
     </section>
 
@@ -404,6 +406,7 @@
     <span>CITIZENS, NOT FOLLOWERS.</span>
   </footer>
 
+  <script src="/js/scrub.js" defer></script>
   <script src="/js/skyline.js" defer></script>
   <script src="/js/archive.js" defer></script>
   <script src="/js/console.js" defer></script>
@@ -412,7 +415,6 @@
   <script src="/js/path.js" defer></script>
   <script src="/js/personnel.js" defer></script>
   <script src="/js/main.js" defer></script>
-  <script src="/js/scrub.js" defer></script>
   <script src="/js/motion.js" defer></script>
   <script src="/js/pickups.js" defer></script>
 </body>

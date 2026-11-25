@@ -61,7 +61,33 @@
       if (left) requestAnimationFrame(f);
     })(t0);
   }
-  if (!reduce && 'IntersectionObserver' in window) {
+  if (!reduce && document.documentElement.classList.contains('scrub')) {
+    // scroll-linked board: letters settle left to right as the record scrolls in, and scramble again on the way back
+    var boards = [].map.call(tl.querySelectorAll('.ev__date'), function (el) {
+      var pulse = el.querySelector('.pulse'), text = el.textContent, cells = [];
+      el.textContent = ''; if (pulse) el.appendChild(pulse); el.classList.add('flap');
+      text.split(' ').forEach(function (word, wi) {
+        if (wi) el.appendChild(document.createTextNode(' '));
+        var w = document.createElement('span'); w.style.whiteSpace = 'nowrap'; w.style.display = 'inline-block'; el.appendChild(w);
+        for (var k = 0; k < word.length; k++) { var c = document.createElement('span'); c.className = 'fl'; c.textContent = word[k]; w.appendChild(c); cells.push({ s: c, c: word[k] }); }
+      });
+      return { ev: el.closest('.ev'), cells: cells };
+    });
+    var bq = false;
+    function boardTick() {
+      bq = false;
+      boards.forEach(function (b) {
+        var sp = parseFloat(b.ev.style.getPropertyValue('--sp')) || 0;
+        var n = b.cells.length, settled = Math.floor(Math.max(0, Math.min(1, (sp - 0.04) / 0.42)) * (n + 1));
+        b.cells.forEach(function (o, i) {
+          if (i < settled) { if (o.s.textContent !== o.c) o.s.textContent = o.c; o.s.classList.remove('spin'); }
+          else if (sp > 0) { o.s.textContent = CH[Math.floor(Math.random() * CH.length)]; o.s.classList.add('spin'); }
+        });
+      });
+    }
+    window.addEventListener('scroll', function () { if (!bq) { bq = true; requestAnimationFrame(boardTick); } }, { passive: true });
+    setTimeout(boardTick, 300);
+  } else if (!reduce && 'IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { flap(e.target); io.unobserve(e.target); } }); }, { threshold: 0.6 });
     [].forEach.call(tl.querySelectorAll('.ev__date'), function (d) { io.observe(d); });
   }

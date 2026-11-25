@@ -20,7 +20,31 @@
     crt.addEventListener('pointerdown', function () { touched = true; });
     crt.addEventListener('keydown', function () { touched = true; });
 
-    once(crt, 0.3, function () {
+    if (root.classList.contains('scrub')) {
+      /* scroll-linked: the tube warms up, then each line and folder types in as you scroll; scroll up rewinds */
+      var sLines = [].slice.call(crt.querySelectorAll('.crt__top p, .crt__h'));
+      var sDirs = [].slice.call(crt.querySelectorAll('.dir'));
+      crt.classList.remove('crt--off'); crt.classList.add('crt--scrub');
+      var steps = sLines.length + sDirs.length, ready = false, sq = false;
+      function crtScrub() {
+        sq = false;
+        var sp = parseFloat(crt.style.getPropertyValue('--sp')) || 0;
+        var pw = Math.min(1, sp / 0.22);
+        crt.style.setProperty('--pw', pw.toFixed(3));
+        var span = 0.7 / Math.max(1, steps);              // lines and folders share 0.24 → 0.94
+        sLines.forEach(function (l, i) {
+          var a = 0.24 + i * span, lp = Math.max(0, Math.min(1, (sp - a) / span));
+          l.style.setProperty('--lp', lp.toFixed(3));
+        });
+        sDirs.forEach(function (d, i) {
+          var a = 0.24 + (sLines.length + i) * span;
+          d.classList.toggle('shown', sp >= a);
+        });
+        if (!ready && sp >= 0.96) { ready = true; crt.classList.add('crt--ready'); }
+      }
+      window.addEventListener('scroll', function () { if (!sq) { sq = true; requestAnimationFrame(crtScrub); } }, { passive: true });
+      crtScrub();
+    } else once(crt, 0.3, function () {
       crt.classList.remove('crt--off'); crt.classList.add('crt--on');
       var lines = [].slice.call(crt.querySelectorAll('.crt__top p, .crt__h'));
       var dirs = [].slice.call(crt.querySelectorAll('.dir'));

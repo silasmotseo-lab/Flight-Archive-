@@ -10,12 +10,29 @@
   var flash = document.createElement('div'); flash.className = 'cv-flash'; flash.setAttribute('aria-hidden', 'true'); document.body.appendChild(flash);
 
   // slow push-in while the scene scrolls past
+  var scrub = document.documentElement.classList.contains('scrub');
   function onScroll() {
     var r = sec.getBoundingClientRect(), vh = window.innerHeight;
     var p = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
     sec.style.setProperty('--cv', p.toFixed(3));
     inView = r.top < vh * 0.5 && r.bottom > vh * 0.5;
+    if (scrub && !busy) {
+      // pinned: 0 when the scene locks to the top, 1 when it lets go
+      var q = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - vh)));
+      var d = Math.min(1, Math.max(0, (q - 0.18) / 0.62));
+      d = d < .5 ? 4 * d * d * d : 1 - Math.pow(-2 * d + 2, 3) / 2;       // ease in-out
+      sec.style.setProperty('--dv', d.toFixed(4));
+      // green flash as you go through the glass, fading as the terminal arrives
+      var f = q < 0.68 ? 0 : Math.min(1, (q - 0.68) / 0.2);
+      // once the scene unpins, the flash covers the hand-off and fades as the terminal slides in
+      if (q >= 1) f = Math.max(0, Math.min(1, (r.bottom - vh * 0.3) / (vh * 0.7)));
+      if (r.top > vh) f = 0;
+      flash.style.opacity = f.toFixed(3);
+      if (q > 0.6 && !buzzed) { buzzed = true; try { navigator.vibrate && navigator.vibrate([12, 30, 40]); } catch (e) {} }
+      if (q < 0.3) buzzed = false;
+    }
   }
+  var buzzed = false;
   window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
   function land() {
