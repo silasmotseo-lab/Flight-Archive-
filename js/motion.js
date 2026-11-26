@@ -30,6 +30,11 @@
         sq = false;
         var sp = parseFloat(crt.style.getPropertyValue('--sp')) || 0;
         var pw = Math.min(1, sp / 0.22);
+        // switch-off as the screen leaves: bottom edge from 65% to 30% of the viewport
+        var gl = crt.querySelector('.crt__glass') || crt, gr = gl.getBoundingClientRect(), vh = window.innerHeight;
+        var gc = (gr.top + gr.bottom) / 2;            // centre stays put while the picture collapses
+        var off = Math.max(0, Math.min(1, (vh * 0.42 - gc) / (vh * 0.3)));
+        crt.style.setProperty('--off', off.toFixed(3));
         crt.style.setProperty('--pw', pw.toFixed(3));
         var span = 0.7 / Math.max(1, steps);              // lines and folders share 0.24 → 0.94
         sLines.forEach(function (l, i) {

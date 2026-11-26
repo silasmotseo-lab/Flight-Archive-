@@ -140,10 +140,18 @@
     <!-- 1.5 · PLAYER ONE: third person → first person -->
     <section class="console" id="console" aria-label="Press start">
       <div class="console__pin">
+        <i class="fog" aria-hidden="true"></i>
+        <i class="console__streaks" aria-hidden="true"></i>
         <div class="console__stage">
           <img class="console__img" src="/assets/env/console_1080.webp" srcset="/assets/env/console_720.webp 720w, /assets/env/console_1080.webp 1080w" sizes="100vw" alt="Si at a green CRT monitor in the hangar, controller in hand" loading="lazy">
           <i class="console__glow" aria-hidden="true"></i>
           <i class="console__scan" aria-hidden="true"></i>
+          <div class="console__screen" aria-hidden="true">
+            <div class="cs__layer"><p class="cs__t">FLIGHT<br>ARCHIVE</p><p class="cs__s">PRESS START</p><p class="cs__m">CASE FILE 001 · LOADING</p></div>
+            <div class="cs__layer cs__tear cs__tear--a"><p class="cs__t">FLIGHT<br>ARCHIVE</p><p class="cs__s">PRESS START</p><p class="cs__m">CASE FILE 001 · LOADING</p></div>
+            <div class="cs__layer cs__tear cs__tear--b"><p class="cs__t">FLIGHT<br>ARCHIVE</p><p class="cs__s">PRESS START</p><p class="cs__m">CASE FILE 001 · LOADING</p></div>
+            <i class="cs__noise"></i>
+          </div>
         </div>
         <p class="console__tag label">// SAVE DATA FOUND · CASE FILE 001</p>
         <div class="console__ui">
@@ -342,6 +350,7 @@
       <div class="recovery__pin">
         <canvas class="film" data-seq="/assets/seq/recorder_" data-frames="96" aria-hidden="true"></canvas>
         <i class="film__shade" aria-hidden="true"></i>
+        <i class="burn" aria-hidden="true"></i>
         <header class="space__head recovery__head">
           <p class="label">// 05.5 · RECOVERY</p>
           <h2 class="space__title">BLACK BOX</h2>

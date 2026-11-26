@@ -270,3 +270,6 @@ html.js.ready .hangar__copy > :nth-child(3) { transition-delay: 0.45s; }
   .hangar__copy .quote { display: none; }
   .hangar__action .btn { flex: 1 1 auto; justify-content: center; text-align: center; padding-left: 12px; padding-right: 12px; }
 }
+
+/* nothing may widen the page sideways on phones (the sun, skyline and HUD bleed past the edge) */
+html, body { overflow-x: clip; }

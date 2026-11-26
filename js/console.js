@@ -22,6 +22,18 @@
       var d = Math.min(1, Math.max(0, (q - 0.18) / 0.62));
       d = d < .5 ? 4 * d * d * d : 1 - Math.pow(-2 * d + 2, 3) / 2;       // ease in-out
       sec.style.setProperty('--dv', d.toFixed(4));
+      // shake, colour split and tearing peak mid-dive and calm as you come through the glass
+      var bump = 4 * d * (1 - d), jit = bump * (d > 0.15 ? 1 : 0);
+      sec.style.setProperty('--bump', bump.toFixed(3));
+      sec.style.setProperty('--sx', ((Math.random() - .5) * 10 * jit).toFixed(1) + 'px');
+      sec.style.setProperty('--sy', ((Math.random() - .5) * 8 * jit).toFixed(1) + 'px');
+      sec.style.setProperty('--ca', (0.2 + bump * 1.6 + (Math.random() < .2 ? bump * 2 : 0)).toFixed(2));
+      sec.style.setProperty('--t1', ((Math.random() - .5) * 40 * bump).toFixed(1) + '%');
+      sec.style.setProperty('--t2', ((Math.random() - .5) * 60 * bump).toFixed(1) + '%');
+      sec.style.setProperty('--t1y', (10 + Math.random() * 70).toFixed(0) + '%');
+      sec.style.setProperty('--t2y', (10 + Math.random() * 80).toFixed(0) + '%');
+      sec.style.setProperty('--nx', ((Math.random() - .5) * 40).toFixed(0) + '%');
+      sec.style.setProperty('--ny', ((Math.random() - .5) * 40).toFixed(0) + '%');
       // green flash as you go through the glass, fading as the terminal arrives
       var f = q < 0.68 ? 0 : Math.min(1, (q - 0.68) / 0.2);
       // once the scene unpins, the flash covers the hand-off and fades as the terminal slides in
@@ -33,6 +45,8 @@
     }
   }
   var buzzed = false;
+  // keep the glitch alive while you hold still mid-dive
+  setInterval(function () { var d = parseFloat(sec.style.getPropertyValue('--dv')) || 0; if (scrub && !busy && d > 0.12 && d < 0.97) onScroll(); }, 70);
   window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
   function land() {

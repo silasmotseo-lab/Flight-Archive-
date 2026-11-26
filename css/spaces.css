@@ -753,3 +753,132 @@ html.scrub .recovery .recovery__head.reveal, .recovery .recovery__head { opacity
 .cockpit__pin { padding-left: var(--pad, 20px); padding-right: var(--pad, 20px); }
 html.scrub .cockpit__pin { padding-left: var(--pad, 20px); padding-right: var(--pad, 20px); }
 .cockpit .film__shade { background: linear-gradient(to bottom, rgba(5,6,5,.7), rgba(5,6,5,.15) 26%, rgba(5,6,5,.05) 45%, rgba(5,6,5,.35) 70%, rgba(5,6,5,.8)); }
+
+/* ══ TRANSITIONS & MOTION VARIETY ═══════════════════════════════════
+   Every seam between scenes has its own scroll-driven transition, and
+   things arrive from different directions and depths, not just left→right. */
+
+/* titles: letters fly in from scattered 3D positions and lock into place */
+.space__title { perspective: 600px; }
+.space__title .tw { display: inline-block; white-space: nowrap; transform-style: preserve-3d; }
+.space__title .tl { display: inline-block; }
+html.scrub .space__title .tl { --k: clamp(0, (var(--sp, 1) - var(--i) * .025) / .5, 1);
+  opacity: clamp(0, var(--k) * 1.6, 1);
+  transform: translate3d(calc(var(--lx) * (1 - var(--k))), calc(var(--ly) * (1 - var(--k))), calc(var(--lz) * (1 - var(--k)))) rotate(calc(var(--lr) * (1 - var(--k))));
+  filter: blur(calc((1 - var(--k)) * 6px)); }
+html.scrub .space__head.reveal { translate: 0 0; }          /* the letters carry the motion now */
+
+/* leaving a scene: it sinks back into the dark as you move on */
+html.scrub main > section:not(.console):not(.recovery):not(.cockpit) > *:not(canvas) {
+  transform: scale(calc(1 - var(--ex, 0) * .07)) translateY(calc(var(--ex, 0) * 6vh)); transform-origin: 50% 0;
+  filter: brightness(calc(1 - var(--ex, 0) * .7)) blur(calc(var(--ex, 0) * 3px)); }
+html.scrub main > section.locker > .table { filter: brightness(calc(1 - var(--ex, 0) * .85)); }
+
+/* hangar → press start: walk out of the light into smoke */
+.fog { position: absolute; inset: -10%; z-index: 2; pointer-events: none;
+  background: radial-gradient(60% 40% at 30% 70%, rgba(170,180,170,.55), transparent 70%), radial-gradient(70% 45% at 75% 35%, rgba(150,160,150,.5), transparent 70%),
+              radial-gradient(90% 60% at 50% 50%, rgba(40,45,40,.9), rgba(5,6,5,.95));
+  filter: blur(10px);
+  opacity: calc(1 - clamp(0, (var(--cv, 0) - .12) / .2, 1));
+  transform: translateY(calc(clamp(0, (var(--cv, 0) - .12) / .2, 1) * -18%)) scale(calc(1 + clamp(0, (var(--cv, 0) - .12) / .2, 1) * .25)); }
+
+/* archive → locker: the CRT switches off — picture collapses to a line, then a dot */
+html.scrub .archive .crt--scrub .crt__glass {
+  --yon: min(var(--pw, 0), calc(1 - clamp(0, var(--off, 0) / .6, 1)));
+  --xon: min(var(--pw, 0), calc(1 - clamp(0, (var(--off, 0) - .6) / .4, 1)));
+  transform: scale(calc(.015 + var(--xon) * .985), calc(.006 + var(--yon) * .994));
+  filter: brightness(calc(1 + (1 - var(--yon)) * 5)) contrast(calc(1 + (1 - var(--yon)) * 2));
+  box-shadow: 0 0 calc((1 - var(--yon)) * 40px) rgba(160,255,180,calc((1 - var(--yon)) * .9)); }
+
+/* personnel → recovery: a film burn flares and eats the frame, then clears onto the hangar */
+.burn { position: absolute; inset: 0; z-index: 3; pointer-events: none; mix-blend-mode: screen;
+  background: radial-gradient(45% 35% at 70% 30%, #fff4dc, rgba(255,170,80,.9) 35%, rgba(255,90,30,.5) 60%, transparent 80%),
+              radial-gradient(40% 50% at 20% 80%, rgba(255,120,40,.8), transparent 70%);
+  --rise: clamp(0, (var(--sp, 0) - .35) / .5, 1); --clear: clamp(0, var(--fq, 0) / .14, 1);
+  opacity: calc(var(--rise) * (1 - var(--clear)));
+  transform: scale(calc(.6 + var(--rise) * .8 + var(--clear) * .6)); }
+
+/* cockpit → tape: the white-out carries over and slowly develops into the footage */
+.footage { position: relative; }
+.footage::before { content: ""; position: absolute; inset: -2px 0 auto 0; height: 120svh; z-index: 5; pointer-events: none;
+  background: linear-gradient(to bottom, #fff3e0 0%, #fff3e0 45%, rgba(255,243,224,0) 100%);
+  opacity: calc(1 - clamp(0, (var(--sp, 0) - .15) / .7, 1)); }
+html.scrub .tape { transform: perspective(900px) rotateX(calc((1 - var(--sp, 0)) * 28deg)) translateY(calc((1 - var(--sp, 0)) * 80px)) scale(calc(.9 + var(--sp, 0) * .1)); }
+
+/* tape → registry: VHS tracking noise rolls through on the way into the registry */
+.registry { position: relative; }
+.registry::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 100svh; z-index: 5; pointer-events: none; mix-blend-mode: screen;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.08) 0 1px, transparent 1px 3px),
+    linear-gradient(to bottom, transparent calc(var(--vb, 0) * 100% - 12%), rgba(255,255,255,.35) calc(var(--vb, 0) * 100% - 4%), rgba(120,255,200,.25) calc(var(--vb, 0) * 100%), transparent calc(var(--vb, 0) * 100% + 6%));
+  --vb: clamp(0, var(--sp, 0) / .8, 1);
+  opacity: calc(1 - clamp(0, (var(--sp, 0) - .6) / .3, 1)); }
+
+/* varied entrances */
+/* evidence cards each arrive from a different side */
+html.scrub .card.reveal:nth-child(4n+1) { translate: calc((1 - var(--k)) * -70px) calc((1 - var(--k)) * -90px); }
+html.scrub .card.reveal:nth-child(4n+2) { translate: calc((1 - var(--k)) * 80px) calc((1 - var(--k)) * -40px); }
+html.scrub .card.reveal:nth-child(4n+3) { translate: 0 calc((1 - var(--k)) * 120px); }
+html.scrub .card.reveal:nth-child(4n+4) { translate: calc((1 - var(--k)) * -40px) calc((1 - var(--k)) * -130px); }
+/* timeline: alternate records rise out of depth or flip up from the floor */
+html.scrub .ev.reveal:nth-child(odd) { --e: clamp(0, var(--sp, 0) * 1.6, 1); opacity: var(--e); translate: 0 0;
+  transform: scale(calc(.82 + var(--e) * .18)); filter: blur(calc((1 - var(--e)) * 8px)); }
+html.scrub .ev.reveal:nth-child(even) { --e: clamp(0, var(--sp, 0) * 1.6, 1); opacity: var(--e); translate: 0 0;
+  transform: perspective(800px) rotateX(calc((1 - var(--e)) * -70deg)); transform-origin: 50% 100%; }
+/* press clippings drop from above, spinning, instead of sliding sideways */
+html.scrub .ev--clip.reveal .clip, html.scrub .ev--clip.reveal.in .clip {
+  transform: translateY(calc((1 - var(--c)) * -160px)) rotate(calc(var(--r, 0deg) + (1 - var(--c)) * 24deg * var(--sd, 1))) scale(calc(1.15 - var(--c) * .15)); }
+.ev--clip .clip:nth-child(even) { --sd: -1; }
+/* dossier fields: alternate between sharpening out of blur and opening from the centre */
+html.scrub .dossier > div:nth-child(odd) dd, html.scrub .dossier > div.in:nth-child(odd) dd { clip-path: none;
+  --d: clamp(0, (var(--sp, 0) - .1) / .55, 1); opacity: var(--d); filter: blur(calc((1 - var(--d)) * 7px)); translate: 0 calc((1 - var(--d)) * 10px); }
+html.scrub .dossier > div:nth-child(even) dd, html.scrub .dossier > div.in:nth-child(even) dd {
+  clip-path: inset(0 calc((1 - clamp(0, (var(--sp, 0) - .1) / .55, 1)) * 50%) 0 calc((1 - clamp(0, (var(--sp, 0) - .1) / .55, 1)) * 50%)); }
+/* memory card swings up like a hatch */
+html.scrub .memcard.reveal { translate: 0 0; transform: perspective(900px) rotateX(calc((1 - clamp(0, var(--sp, 0) * 1.4, 1)) * 55deg)); transform-origin: 50% 100%; }
+@media (prefers-reduced-motion: reduce) { .fog, .burn, .footage::before, .registry::before { display: none; } }
+
+/* ── PRESS START dive, rebuilt: pulled into the machine, not zoomed into a photo ──
+   --dv = dive progress (0→1), --bump = 4·dv·(1−dv) peaks mid-dive, --sx/--sy shake, --t1/--t2 tear offsets */
+html.scrub .console:not(.go) .console__stage { will-change: auto;
+  transform: translate(var(--sx, 0px), var(--sy, 0px)) scale(calc(1.06 + var(--dv, 0) * 6.6)) rotate(calc(var(--bump, 0) * -1.2deg)); }
+html.scrub .console__img { filter: blur(calc(clamp(0, (var(--dv, 0) - .2) / .3, 1) * 3px)) brightness(calc(1 - clamp(0, (var(--dv, 0) - .25) / .3, 1) * .5)); }
+.console__screen { position: absolute; left: 20.6%; top: 40.6%; width: 25.4%; height: 13.2%; border-radius: 9% / 14%; overflow: hidden; z-index: 1;
+  container-type: inline-size; background: radial-gradient(120% 120% at 50% 50%, #0f3a17, #041207 75%);
+  box-shadow: inset 0 0 6cqw rgba(0,0,0,.85), 0 0 4cqw rgba(110,255,140,.35);
+  opacity: clamp(0, (var(--dv, 0) - .08) / .18, 1); }
+.cs__layer { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+  font-family: var(--mono); font-weight: 500; color: #a8ffbc; letter-spacing: .08em;
+  text-shadow: calc(var(--ca, 0) * -1cqw) 0 rgba(255,40,90,.75), calc(var(--ca, 0) * 1cqw) 0 rgba(40,220,255,.75), 0 0 2cqw rgba(120,255,150,.8); }
+.cs__t { font-size: 15cqw; line-height: .95; font-weight: 500; }
+.cs__s { margin-top: 5cqw; font-size: 7cqw; letter-spacing: .3em; animation: beacon 1s steps(1) infinite; }
+.cs__m { margin-top: 3cqw; font-size: 3.2cqw; letter-spacing: .2em; color: rgba(168,255,188,.6); }
+.cs__tear { opacity: calc(clamp(0, (var(--dv, 0) - .45) / .1, 1)); }
+.cs__tear--a { clip-path: inset(var(--t1y, 30%) 0 calc(100% - var(--t1y, 30%) - 9%) 0); transform: translateX(var(--t1, 0)); background: #0a2a10; }
+.cs__tear--b { clip-path: inset(var(--t2y, 62%) 0 calc(100% - var(--t2y, 62%) - 6%) 0); transform: translateX(var(--t2, 0)); background: #0a2a10; }
+.console__screen::before { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: repeating-linear-gradient(to bottom, rgba(0,0,0,.45) 0 .7cqw, transparent .7cqw 1.6cqw); }
+.console__screen::after { content: ""; position: absolute; inset: 0; z-index: 4; pointer-events: none; border-radius: inherit;
+  background: radial-gradient(110% 110% at 50% 50%, transparent 55%, rgba(0,0,0,.7)); }
+.cs__noise { position: absolute; inset: -50%; z-index: 2; pointer-events: none; mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='.9'/></svg>");
+  opacity: calc(clamp(0, (var(--dv, 0) - .55) / .35, 1) * .55); transform: translate(var(--nx, 0), var(--ny, 0)); }
+/* speed streaks radiating from the screen as you're pulled in */
+.console__streaks { position: absolute; inset: -30%; z-index: 2; pointer-events: none; mix-blend-mode: screen;
+  background: repeating-conic-gradient(from calc(var(--dv, 0) * 40deg) at 50% 50%, rgba(170,255,190,.0) 0deg 3.2deg, rgba(170,255,190,.55) 3.4deg, rgba(170,255,190,0) 3.8deg 7deg);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 14%, #000 40%, transparent 75%); mask-image: radial-gradient(circle at 50% 50%, transparent 14%, #000 40%, transparent 75%);
+  opacity: calc(var(--bump, 0) * clamp(0, (var(--dv, 0) - .2) / .15, 1) * 1.1);
+  transform: scale(calc(.6 + var(--dv, 0) * 1.4)); }
+/* tuned seams: the white-out holds while the tape section arrives, then melts away */
+.footage::before { height: 75svh; inset: -2px 0 auto 0;
+  background: linear-gradient(to bottom, #fff3e0 0%, #fff3e0 30%, rgba(255,243,224,.6) 60%, rgba(255,243,224,0) 100%);
+  opacity: calc(1 - clamp(0, var(--sp, 0), 1)); }
+/* tape → registry: proper VHS breakup — static, a bright tracking band rolling down, colour bleed */
+.registry::before { height: 110svh; mix-blend-mode: normal;
+  background:
+    linear-gradient(to bottom, transparent calc(var(--vb, 0) * 100% - 14%), rgba(255,255,255,.55) calc(var(--vb, 0) * 100% - 5%), rgba(120,255,210,.45) calc(var(--vb, 0) * 100% - 2%), rgba(255,60,120,.35) calc(var(--vb, 0) * 100%), transparent calc(var(--vb, 0) * 100% + 5%)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.12) 0 1px, transparent 1px 3px),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='7'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>"),
+    rgba(10,12,10,.55);
+  --vb: clamp(0, var(--sp, 0) / .75, 1);
+  opacity: calc(1 - clamp(0, (var(--sp, 0) - .7) / .25, 1)); }
