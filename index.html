@@ -337,13 +337,42 @@
       </div>
     </section>
 
+    <!-- 5.5 · RECOVERY: the flight recorder, found by scroll -->
+    <section class="space recovery" id="recovery" data-space="RECOVERY" aria-label="The flight recorder">
+      <div class="recovery__pin">
+        <canvas class="film" data-seq="/assets/seq/recorder_" data-frames="96" aria-hidden="true"></canvas>
+        <i class="film__shade" aria-hidden="true"></i>
+        <header class="space__head recovery__head">
+          <p class="label">// 05.5 · RECOVERY</p>
+          <h2 class="space__title">BLACK BOX</h2>
+          <p class="space__lede">Found in the wreckage. Still transmitting.</p>
+        </header>
+        <div class="recorder" id="bb">
+          <div class="recorder__band"><span>FLIGHT RECORDER</span><span>DO NOT OPEN</span></div>
+          <div class="recorder__face">
+            <p class="recorder__id">BLACK BOX RECOVERY #002 · UNRELEASED · SIGNAL FRAGMENT</p>
+            <p class="recorder__t">FRAGMENT 001 — SOURCE UNKNOWN</p>
+            <div class="recorder__row">
+              <button class="recorder__play" id="bb-play" type="button" aria-label="Play recovered audio">▶</button>
+              <div class="recorder__wave" id="bb-wave" aria-hidden="true"></div>
+            </div>
+            <div class="recorder__meta"><span id="bb-st">SIGNAL: SEARCHING</span><span id="bb-tm">00:00 / 00:00</span></div>
+          </div>
+          <audio id="bb-au" preload="metadata" src="/assets/audio/blackbox-001.mp3"></audio>
+        </div>
+      </div>
+    </section>
+
     <!-- 6 · THE COCKPIT / BLACK BOX -->
     <section class="space cockpit" id="cockpit" data-space="COCKPIT" aria-label="The cockpit">
       <div class="cockpit__pin">
+      <canvas class="film film--cockpit" data-seq="/assets/seq/cockpit_" data-frames="120" aria-hidden="true"></canvas>
+      <i class="film__shade" aria-hidden="true"></i>
+      <i class="whiteout" aria-hidden="true"></i>
       <header class="space__head">
         <p class="label">// 06 · THE COCKPIT</p>
-        <h2 class="space__title">BLACK BOX</h2>
-        <p class="space__lede">Final climb. The flight recorder is still searching for the signal.</p>
+        <h2 class="space__title">FINAL CLIMB</h2>
+        <p class="space__lede">Final climb. Straight into the sun.</p>
       </header>
 
       <div class="panel" aria-hidden="true">
@@ -396,19 +425,6 @@
         </div>
       </div>
 
-      <div class="recorder" id="bb">
-        <div class="recorder__band"><span>FLIGHT RECORDER</span><span>DO NOT OPEN</span></div>
-        <div class="recorder__face">
-          <p class="recorder__id">BLACK BOX RECOVERY #002 · UNRELEASED · SIGNAL FRAGMENT</p>
-          <p class="recorder__t">FRAGMENT 001 — SOURCE UNKNOWN</p>
-          <div class="recorder__row">
-            <button class="recorder__play" id="bb-play" type="button" aria-label="Play recovered audio">▶</button>
-            <div class="recorder__wave" id="bb-wave" aria-hidden="true"></div>
-          </div>
-          <div class="recorder__meta"><span id="bb-st">SIGNAL: SEARCHING</span><span id="bb-tm">00:00 / 00:00</span></div>
-        </div>
-        <audio id="bb-au" preload="metadata" src="/assets/audio/blackbox-001.mp3"></audio>
-      </div>
       </div>
     </section>
 
@@ -484,6 +500,7 @@
   <script src="/js/path.js" defer></script>
   <script src="/js/personnel.js" defer></script>
   <script src="/js/cockpit.js" defer></script>
+  <script src="/js/seqscene.js" defer></script>
   <script src="/js/main.js" defer></script>
   <script src="/js/motion.js" defer></script>
   <script src="/js/pickups.js" defer></script>

@@ -46,14 +46,17 @@
     // black box: no audio yet → the waveform is static that locks on as you climb
     if (failed && !hasAudio) {
       if (!bars) bars = [].slice.call(wave.children);
-      var lock = Math.min(1, q / 0.9);
+      // the signal locks on as you push in on the recorder in the recovery scene
+      var recov = document.getElementById('recovery');
+      var fq = recov ? (parseFloat(recov.style.getPropertyValue('--fq')) || 0) : q;
+      var lock = Math.min(1, Math.max(0, (fq - 0.55) / 0.4));
       bars.forEach(function (b, i) {
         var target = 18 + Math.abs(Math.sin(i * 1.7) * 30 + Math.sin(i * 0.45) * 20);
         var noise = 8 + Math.random() * 80;
         b.style.height = Math.min(96, noise * (1 - lock) + target * lock).toFixed(0) + '%';
       });
-      st.textContent = q < 0.9 ? 'SIGNAL: SEARCHING · ' + String(Math.round(lock * 100)).padStart(2, '0') + '%' : 'SIGNAL LOCATED · FRAGMENT PENDING RELEASE';
-      st.style.color = q < 0.9 ? 'var(--red)' : 'var(--amber)';
+      st.textContent = lock < 1 ? 'SIGNAL: SEARCHING · ' + String(Math.round(lock * 100)).padStart(2, '0') + '%' : 'SIGNAL LOCATED · FRAGMENT PENDING RELEASE';
+      st.style.color = lock < 1 ? 'var(--red)' : 'var(--amber)';
     }
   }
   function onScroll() { if (!queued) { queued = true; requestAnimationFrame(draw); } }
